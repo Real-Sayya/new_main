@@ -53,7 +53,7 @@ class Roles(commands.Cog):
         if not channel:
             return format_error("Channel context required")
 
-        # Create button that opens modal
+        
         class RoleCreateButton(discord.ui.View):
             def __init__(self, role_manager, guild):
                 super().__init__(timeout=120)
@@ -70,7 +70,7 @@ class Roles(commands.Cog):
             "👑 **Create New Role**\nClick the button below to fill in role details:",
             view=view
         )
-        return None  # Don't send additional message
+        return None  
 
     async def cmd_role_delete(self, discord_id: int, args: list, guild: discord.Guild) -> str:
         """Delete a role"""
@@ -88,13 +88,13 @@ class Roles(commands.Cog):
         if not role:
             return format_error(f"Role not found (ID: {role_id})")
 
-        role_name = role.name  # Store before deletion
+        role_name = role.name  
 
-        # Delete role
+        
         success, message = await self.role_manager.delete_role(guild, role)
 
         if success:
-            # Log role action
+            
             TerminalLogger.log_role_action(
                 server=guild.name,
                 admin="TERMINAL",
@@ -111,7 +111,7 @@ class Roles(commands.Cog):
         if not channel:
             return format_error("Channel context required")
 
-        # Create button that opens modal
+        
         class RoleGiveButton(discord.ui.View):
             def __init__(self, role_manager, guild):
                 super().__init__(timeout=120)
@@ -128,14 +128,14 @@ class Roles(commands.Cog):
             "➕ **Give Role to User**\nClick the button below to specify user and role:",
             view=view
         )
-        return None  # Don't send additional message
+        return None  
 
     async def cmd_role_remove(self, discord_id: int, args: list, guild: discord.Guild, channel=None) -> str:
         """Remove a role from a user"""
         if not channel:
             return format_error("Channel context required")
 
-        # Create button that opens modal
+        
         class RoleRemoveButton(discord.ui.View):
             def __init__(self, role_manager, guild):
                 super().__init__(timeout=120)
@@ -152,7 +152,7 @@ class Roles(commands.Cog):
             "➖ **Remove Role from User**\nClick the button below to specify user and role:",
             view=view
         )
-        return None  # Don't send additional message
+        return None  
 
     async def cmd_role_list(self, discord_id: int, args: list, guild: discord.Guild) -> str:
         """List all roles in the guild"""
@@ -217,7 +217,7 @@ class Roles(commands.Cog):
                 "Example: sudo role edit @Moderator"
             )
 
-        # Parse role
+        
         role_id = self.role_manager.parse_role_id(args[0])
         if not role_id:
             return format_error("Invalid role ID or mention")
@@ -226,7 +226,7 @@ class Roles(commands.Cog):
         if not role:
             return format_error(f"Role not found (ID: {role_id})")
 
-        # Create button that opens modal
+        
         class RoleEditButton(discord.ui.View):
             def __init__(self, role_manager, guild, role):
                 super().__init__(timeout=120)
@@ -244,7 +244,7 @@ class Roles(commands.Cog):
             f"✏️ **Edit Role: {role.name}**\nClick the button below to edit role properties:",
             view=view
         )
-        return None  # Don't send additional message
+        return None  
 
 
 def setup(bot):

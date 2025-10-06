@@ -24,7 +24,7 @@ class Moderation(commands.Cog):
         if len(args) < 2:
             return format_error("Usage: sudo warn <user_id|@mention> <reason>")
 
-        # Parse user
+        
         user_id = self._parse_user_id(args[0])
         if not user_id:
             return format_error("Invalid user ID or mention")
@@ -36,21 +36,21 @@ class Moderation(commands.Cog):
         except:
             return format_error("User not found in this guild")
 
-        # Check if trying to warn bot or self
+        
         if member.bot:
             return format_error("Cannot warn bots")
         if member.id == discord_id:
             return format_error("Cannot warn yourself")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "WARN", reason
         )
 
-        # Add warning
+        
         warn_count = await self.mod_manager.add_warning(guild.id, user_id)
 
-        # Log moderation action
+        
         moderator = await guild.fetch_member(discord_id)
         mod_name = f"{moderator.name}#{moderator.discriminator}" if moderator else str(discord_id)
         TerminalLogger.log_moderation(
@@ -62,7 +62,7 @@ class Moderation(commands.Cog):
             case_id=case_id
         )
 
-        # Build response
+        
         output = [
             f"✅ Warning issued to {member.name} (ID: {user_id})",
             f"Case ID: #{case_id}",
@@ -70,7 +70,7 @@ class Moderation(commands.Cog):
             f"Total Warnings: {warn_count}"
         ]
 
-        # Auto-actions (ONLY at exact counts to avoid duplicates)
+        
         auto_action = None
         if warn_count == 3:
             auto_action = await self._auto_kick(guild, member, discord_id, "3 warnings reached")
@@ -108,24 +108,24 @@ class Moderation(commands.Cog):
         if member.id == discord_id:
             return format_error("Cannot kick yourself")
 
-        # Check permissions
+        
         if member.top_role >= guild.me.top_role:
             return format_error("Cannot kick this user (role hierarchy)")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "KICK", reason
         )
 
-        # Kick user
+        
         try:
             await member.send(f"You have been kicked from {guild.name}.\nReason: {reason}")
         except:
-            pass  # DMs disabled
+            pass  
 
         await member.kick(reason=f"[Case #{case_id}] {reason}")
 
-        # Log moderation action
+        
         moderator = await guild.fetch_member(discord_id)
         mod_name = f"{moderator.name}#{moderator.discriminator}" if moderator else str(discord_id)
         TerminalLogger.log_moderation(
@@ -153,7 +153,7 @@ class Moderation(commands.Cog):
         if not user_id:
             return format_error("Invalid user ID or mention")
 
-        # Parse duration and reason
+        
         duration = None
         reason_start_idx = 1
 
@@ -166,7 +166,7 @@ class Moderation(commands.Cog):
         try:
             member = await guild.fetch_member(user_id)
         except:
-            # User not in guild - try to ban by ID
+            
             try:
                 user = await self.bot.fetch_user(user_id)
                 member = None
@@ -181,12 +181,12 @@ class Moderation(commands.Cog):
             if member.top_role >= guild.me.top_role:
                 return format_error("Cannot ban this user (role hierarchy)")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "BAN", reason, duration
         )
 
-        # Ban user
+        
         try:
             if member:
                 duration_text = self.mod_manager.format_duration(duration) if duration else "Permanent"
@@ -200,11 +200,11 @@ class Moderation(commands.Cog):
 
         await guild.ban(discord.Object(id=user_id), reason=f"[Case #{case_id}] {reason}")
 
-        # Schedule unban if temporary
+        
         if duration:
             self.bot.loop.create_task(self._schedule_unban(guild.id, user_id, case_id, duration))
 
-        # Log moderation action
+        
         moderator = await guild.fetch_member(discord_id)
         mod_name = f"{moderator.name}#{moderator.discriminator}" if moderator else str(discord_id)
         ban_type = f"TEMPBAN ({self.mod_manager.format_duration(duration)})" if duration else "BAN"
@@ -236,21 +236,21 @@ class Moderation(commands.Cog):
 
         reason = " ".join(args[1:]) if len(args) > 1 else "Unbanned by admin"
 
-        # Check if user is banned
+        
         try:
             await guild.fetch_ban(discord.Object(id=user_id))
         except discord.NotFound:
             return format_error("User is not banned")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "UNBAN", reason
         )
 
-        # Unban user
+        
         await guild.unban(discord.Object(id=user_id), reason=f"[Case #{case_id}] {reason}")
 
-        # Log moderation action
+        
         moderator = await guild.fetch_member(discord_id)
         mod_name = f"{moderator.name}#{moderator.discriminator}" if moderator else str(discord_id)
         TerminalLogger.log_moderation(
@@ -294,17 +294,17 @@ class Moderation(commands.Cog):
         if member.id == discord_id:
             return format_error("Cannot timeout yourself")
 
-        # Parse duration
+        
         delta = self._parse_timedelta(duration_str)
         if not delta or delta > timedelta(days=28):
             return format_error("Timeout duration must be between 1 minute and 28 days")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "TIMEOUT", reason, duration_str
         )
 
-        # Apply timeout
+        
         try:
             await member.timeout_for(delta, reason=f"[Case #{case_id}] {reason}")
         except discord.Forbidden:
@@ -319,7 +319,7 @@ class Moderation(commands.Cog):
         except:
             pass
 
-        # Log moderation action
+        
         moderator = await guild.fetch_member(discord_id)
         mod_name = f"{moderator.name}#{moderator.discriminator}" if moderator else str(discord_id)
         TerminalLogger.log_moderation(
@@ -358,12 +358,12 @@ class Moderation(commands.Cog):
         if not member.is_timed_out():
             return format_error("User is not timed out")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "UNTIMEOUT", reason
         )
 
-        # Remove timeout
+        
         await member.remove_timeout(reason=f"[Case #{case_id}] {reason}")
 
         return format_code_block(
@@ -382,13 +382,13 @@ class Moderation(commands.Cog):
         if not user_id:
             return format_error("Invalid user ID or mention")
 
-        # Remove warning
+        
         success, new_count = await self.mod_manager.remove_warning(guild.id, user_id)
 
         if not success:
             return format_error("User has no warnings to remove")
 
-        # Create case
+        
         case_id = await self.mod_manager.create_case(
             guild.id, user_id, discord_id, "DELWARN", "Warning removed by admin"
         )
@@ -409,10 +409,10 @@ class Moderation(commands.Cog):
         if not user_id:
             return format_error("Invalid user ID or mention")
 
-        # Get warning count
+        
         warn_count = await self.mod_manager.get_warning_count(guild.id, user_id)
 
-        # Get cases
+        
         cases = await self.mod_manager.get_user_cases(guild.id, user_id, limit=15)
 
         if not cases:
@@ -438,11 +438,11 @@ class Moderation(commands.Cog):
 
         return format_code_block("\n".join(output))
 
-    # === Helper Functions ===
+    
 
     def _parse_user_id(self, user_input: str) -> int:
         """Parse user ID from mention or raw ID"""
-        # Remove mention formatting
+        
         user_input = user_input.strip('<@!>')
         try:
             return int(user_input)
@@ -472,7 +472,7 @@ class Moderation(commands.Cog):
         except:
             return None
 
-    # === Auto-Action Helpers ===
+    
 
     async def _auto_kick(self, guild: discord.Guild, member: discord.Member,
                          moderator_id: int, reason: str) -> int:
@@ -488,7 +488,7 @@ class Moderation(commands.Cog):
 
         await member.kick(reason=f"[Case #{case_id}] Auto-kick: {reason}")
 
-        # Log auto-action
+        
         TerminalLogger.log_moderation(
             server=guild.name,
             moderator="SYSTEM",
@@ -517,10 +517,10 @@ class Moderation(commands.Cog):
 
         await guild.ban(member, reason=f"[Case #{case_id}] Auto-tempban: {reason}")
 
-        # Schedule unban
+        
         self.bot.loop.create_task(self._schedule_unban(guild.id, member.id, case_id, duration))
 
-        # Log auto-action
+        
         TerminalLogger.log_moderation(
             server=guild.name,
             moderator="SYSTEM",
@@ -549,7 +549,7 @@ class Moderation(commands.Cog):
 
         await guild.ban(member, reason=f"[Case #{case_id}] Auto-ban: {reason}")
 
-        # Log auto-action
+        
         TerminalLogger.log_moderation(
             server=guild.name,
             moderator="SYSTEM",
@@ -570,14 +570,14 @@ class Moderation(commands.Cog):
 
         await asyncio.sleep(delta.total_seconds())
 
-        # Unban user
+        
         guild = self.bot.get_guild(guild_id)
         if guild:
             try:
                 await guild.unban(discord.Object(id=user_id), reason=f"[Case #{case_id}] Temporary ban expired")
                 await self.mod_manager.deactivate_case(case_id)
             except:
-                pass  # User already unbanned or error
+                pass  
 
 
 def setup(bot):

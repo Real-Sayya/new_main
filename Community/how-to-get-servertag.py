@@ -22,7 +22,7 @@ class TranslateView(discord.ui.View):
 class StartupEmbed(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = 1378117380584247438  # <-- Ersetzen!
+        self.channel_id = 1378117380584247438  
 
     async def send_or_update_embed(self):
         path = "Data/message.json"
@@ -30,7 +30,7 @@ class StartupEmbed(commands.Cog):
 
         data = {"text_de": "Dies ist die deutsche Version.", "text_en": "This is the English version."}
 
-        # Bestehende Daten einlesen oder neu anlegen
+        
         if os.path.exists(path):
             with open(path, "r") as f:
                 try:
@@ -59,9 +59,9 @@ class StartupEmbed(commands.Cog):
                 await message.edit(embed=embed_de, view=view)
                 return
             except (discord.NotFound, discord.HTTPException):
-                pass  # Fallback auf neu posten
+                pass  
 
-        # Neue Nachricht posten
+        
         message = await channel.send(embed=embed_de, file=file, view=view)
         data["message_id"] = message.id
 

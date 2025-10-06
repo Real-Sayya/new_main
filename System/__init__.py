@@ -1,4 +1,4 @@
-# Virtual Terminal System Package
+
 
 def setup(bot):
     """Empty setup - this is just a package init file"""

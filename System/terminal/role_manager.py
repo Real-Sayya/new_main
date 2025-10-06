@@ -12,10 +12,10 @@ class RoleManager:
         if not color_str:
             return discord.Color.default()
 
-        # Remove # if present
+        
         color_str = color_str.strip('#').lower()
 
-        # Predefined colors
+        
         color_map = {
             'red': discord.Color.red(),
             'blue': discord.Color.blue(),
@@ -40,7 +40,7 @@ class RoleManager:
         if color_str in color_map:
             return color_map[color_str]
 
-        # Try hex color
+        
         try:
             if len(color_str) == 6:
                 return discord.Color(int(color_str, 16))
@@ -51,7 +51,7 @@ class RoleManager:
 
     def parse_role_id(self, role_input: str) -> Optional[int]:
         """Parse role ID from mention or raw ID"""
-        # Remove role mention formatting <@&ID>
+        
         role_input = role_input.strip('<@&>')
         try:
             return int(role_input)
@@ -60,7 +60,7 @@ class RoleManager:
 
     def parse_user_id(self, user_input: str) -> Optional[int]:
         """Parse user ID from mention or raw ID"""
-        # Remove user mention formatting
+        
         user_input = user_input.strip('<@!>')
         try:
             return int(user_input)
@@ -97,15 +97,15 @@ class RoleManager:
             role_name = role.name
             role_id = role.id
 
-            # Check if role is managed (bot roles, boosters, etc.)
+            
             if role.managed:
                 return False, "Cannot delete managed role (bot/integration role)"
 
-            # Check if role is @everyone
+            
             if role.is_default():
                 return False, "Cannot delete @everyone role"
 
-            # Check hierarchy
+            
             if role >= guild.me.top_role:
                 return False, "Cannot delete role (role hierarchy)"
 
@@ -121,11 +121,11 @@ class RoleManager:
                        role: discord.Role) -> Tuple[bool, str]:
         """Give a role to a member"""
         try:
-            # Check if member already has role
+            
             if role in member.roles:
                 return False, f"{member.name} already has role '{role.name}'"
 
-            # Check hierarchy
+            
             if role >= guild.me.top_role:
                 return False, "Cannot assign role (role hierarchy)"
 
@@ -141,11 +141,11 @@ class RoleManager:
                          role: discord.Role) -> Tuple[bool, str]:
         """Remove a role from a member"""
         try:
-            # Check if member has the role
+            
             if role not in member.roles:
                 return False, f"{member.name} doesn't have role '{role.name}'"
 
-            # Check hierarchy
+            
             if role >= guild.me.top_role:
                 return False, "Cannot remove role (role hierarchy)"
 
@@ -164,15 +164,15 @@ class RoleManager:
                        mentionable: Optional[bool] = None) -> Tuple[bool, str]:
         """Edit an existing role"""
         try:
-            # Check if role is @everyone
+            
             if role.is_default():
                 return False, "Cannot edit @everyone role properties via this command"
 
-            # Check hierarchy
+            
             if role >= guild.me.top_role:
                 return False, "Cannot edit role (role hierarchy)"
 
-            # Build kwargs for what to update
+            
             kwargs = {}
             changes = []
 
@@ -219,7 +219,7 @@ class RoleManager:
         info.append(f"Members: {len(role.members)}")
         info.append(f"Created: {role.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
 
-        # Permissions summary
+        
         perms = role.permissions
         admin_perms = []
         if perms.administrator:

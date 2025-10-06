@@ -29,7 +29,7 @@ class APT(commands.Cog):
     async def setup_database(self):
         """Initialize APT database"""
         async with aiosqlite.connect(self.db_path) as db:
-            # Installed packages table
+            
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS installed_packages (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +42,7 @@ class APT(commands.Cog):
                 )
             """)
 
-            # Package usage statistics
+            
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS package_stats (
                     package_name TEXT PRIMARY KEY,
@@ -92,17 +92,17 @@ class APT(commands.Cog):
 
         package_name = args[0].lower()
 
-        # Check if package exists
+        
         if package_name not in self.config['packages']:
             return format_error(f"Package '{package_name}' not found. Use 'apt search' to find packages.")
 
         package = self.config['packages'][package_name]
 
-        # Check if already installed
+        
         if await self.is_installed(discord_id, guild.id, package_name):
             return format_error(f"Package '{package_name}' is already installed")
 
-        # Check disk quota
+        
         if self.config['settings']['disk_quota_enabled']:
             user_usage = await self.get_user_disk_usage(discord_id, guild.id)
             max_quota = self.config['settings']['max_disk_usage_bytes']
@@ -115,17 +115,17 @@ class APT(commands.Cog):
                     f"Quota: {max_quota / 1024:.2f} KB"
                 )
 
-        # Check max packages limit
+        
         installed_count = await self.get_installed_count(discord_id, guild.id)
         max_packages = self.config['settings']['max_packages_per_user']
 
         if installed_count >= max_packages:
             return format_error(f"Maximum package limit reached ({max_packages} packages)")
 
-        # Install package (grant roles and channel access)
+        
         member = await guild.fetch_member(discord_id)
 
-        # Grant roles
+        
         for role_id in package.get('role_ids', []):
             role = guild.get_role(role_id)
             if role and role not in member.roles:
@@ -134,14 +134,14 @@ class APT(commands.Cog):
                 except:
                     pass
 
-        # Add to database
+        
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
                 INSERT INTO installed_packages (user_id, guild_id, package_name, version)
                 VALUES (?, ?, ?, ?)
             """, (discord_id, guild.id, package_name, package['version']))
 
-            # Update stats
+            
             await db.execute("""
                 INSERT INTO package_stats (package_name, install_count, last_installed)
                 VALUES (?, 1, CURRENT_TIMESTAMP)
@@ -152,13 +152,13 @@ class APT(commands.Cog):
 
             await db.commit()
 
-        # Log installation
+        
         TerminalLogger.log_system(
             f"APT: {member.name} installed package '{package_name}' v{package['version']}",
             level="INFO"
         )
 
-        # Build response
+        
         output = [
             f"✅ Package '{package_name}' installed successfully",
             f"Version: {package['version']}",
@@ -185,7 +185,7 @@ class APT(commands.Cog):
 
         package_name = args[0].lower()
 
-        # Check if installed
+        
         if not await self.is_installed(discord_id, guild.id, package_name):
             return format_error(f"Package '{package_name}' is not installed")
 
@@ -193,7 +193,7 @@ class APT(commands.Cog):
         if not package:
             return format_error(f"Package '{package_name}' not found in repository")
 
-        # Remove roles
+        
         member = await guild.fetch_member(discord_id)
 
         for role_id in package.get('role_ids', []):
@@ -204,7 +204,7 @@ class APT(commands.Cog):
                 except:
                     pass
 
-        # Remove from database
+        
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("""
                 DELETE FROM installed_packages
@@ -212,7 +212,7 @@ class APT(commands.Cog):
             """, (discord_id, guild.id, package_name))
             await db.commit()
 
-        # Log removal
+        
         TerminalLogger.log_system(
             f"APT: {member.name} removed package '{package_name}'",
             level="INFO"
@@ -225,7 +225,7 @@ class APT(commands.Cog):
         installed = '--installed' in args or len(args) == 0
 
         if installed:
-            # List user's installed packages
+            
             async with aiosqlite.connect(self.db_path) as db:
                 cursor = await db.execute("""
                     SELECT package_name, version, installed_at FROM installed_packages
@@ -259,7 +259,7 @@ class APT(commands.Cog):
             return format_code_block("\n".join(output))
 
         else:
-            # List all available packages
+            
             return await self.cmd_search(discord_id, [], guild)
 
     async def cmd_search(self, discord_id: int, args: list, guild: discord.Guild) -> str:
@@ -273,7 +273,7 @@ class APT(commands.Cog):
 
         packages = self.config['packages']
 
-        # Filter by search term
+        
         if search_term:
             filtered = {k: v for k, v in packages.items()
                        if search_term in k.lower() or search_term in v.get('description', '').lower()}
@@ -283,7 +283,7 @@ class APT(commands.Cog):
         if not filtered:
             return format_code_block(f"No packages found matching '{search_term}'")
 
-        # Group by category
+        
         by_category = {}
         for pkg_name, pkg_info in filtered.items():
             category = pkg_info.get('category', 'other')
@@ -322,7 +322,7 @@ class APT(commands.Cog):
         package = self.config['packages'][package_name]
         installed = await self.is_installed(discord_id, guild.id, package_name)
 
-        # Get install stats
+        
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute("""
                 SELECT install_count, last_installed FROM package_stats
@@ -398,7 +398,7 @@ NOTES:
 """
         return format_code_block(help_text)
 
-    # === Helper Functions ===
+    
 
     async def is_installed(self, user_id: int, guild_id: int, package_name: str) -> bool:
         """Check if package is installed for user"""

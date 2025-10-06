@@ -21,3 +21,10 @@ Thumbs.db
 # Project specific
 *.log
 .env
+config.py
+
+# Documentation (internal)
+PROJEKT_ÜBERSICHT.md
+
+# Claude Code
+.claude/

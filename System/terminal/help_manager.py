@@ -21,22 +21,22 @@ class HelpManager:
     def get_help(self, category: Optional[str] = None, command: Optional[str] = None) -> str:
         """Get help text for category or specific command"""
 
-        # If no category specified, show category list
+        
         if not category:
             return self._show_categories()
 
-        # Normalize category name
+        
         category = category.lower()
 
-        # Check if category exists
+        
         if category not in self.help_data['categories']:
             return self._search_command(category)
 
-        # If command specified, show command help
+        
         if command:
             return self._show_command_help(category, command)
 
-        # Otherwise show all commands in category
+        
         return self._show_category_help(category)
 
     def _show_categories(self) -> str:
@@ -74,14 +74,14 @@ class HelpManager:
         output.append("  help moderation         Show moderation commands")
         output.append("")
 
-        # Show aliases
+        
         if self.help_data.get('aliases'):
             output.append("ALIASES:")
             for alias, command in self.help_data['aliases'].items():
                 output.append(f"  {alias:<10} = {command}")
             output.append("")
 
-        # Show notes
+        
         if self.help_data.get('notes'):
             output.append("NOTES:")
             for note in self.help_data['notes']:
@@ -144,21 +144,21 @@ class HelpManager:
             ""
         ]
 
-        # Show options if available
+        
         if cmd_data.get('options'):
             output.append("OPTIONS:")
             for option in cmd_data['options']:
                 output.append(f"  {option}")
             output.append("")
 
-        # Show examples
+        
         if cmd_data.get('examples'):
             output.append("EXAMPLES:")
             for example in cmd_data['examples']:
                 output.append(f"  $ {example}")
             output.append("")
 
-        # Show notes
+        
         if cmd_data.get('notes'):
             output.append("NOTES:")
             for note in cmd_data['notes']:
@@ -172,12 +172,12 @@ class HelpManager:
         search_term = search_term.lower()
         results = []
 
-        # Search in all categories
+        
         for cat_key, cat_data in self.help_data['categories'].items():
             commands = cat_data.get('commands', {})
 
             for cmd_name, cmd_data in commands.items():
-                # Check if search term matches command name
+                
                 if search_term in cmd_name.lower():
                     results.append({
                         'category': cat_key,
@@ -192,12 +192,12 @@ class HelpManager:
                 f"Type 'help' to see all categories"
             )
 
-        # If only one result, show detailed help
+        
         if len(results) == 1:
             result = results[0]
             return self._show_command_help(result['category'], result['command'])
 
-        # Otherwise show search results
+        
         output = [
             f"SEARCH RESULTS FOR '{search_term}':",
             "=" * 48,

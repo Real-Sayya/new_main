@@ -5,7 +5,7 @@ import discord
 class TerminalLogger:
     """Centralized logging system for all terminal activities"""
 
-    # ANSI color codes for console output
+    
     COLORS = {
         'RESET': '\033[0m',
         'BOLD': '\033[1m',
@@ -71,7 +71,7 @@ class TerminalLogger:
 
         print(log_msg)
 
-        # Print IDs in gray for reference
+        
         if guild_id or channel_id or user_id:
             c = cls.COLORS
             id_info = f"{c['GRAY']}    IDs: "
@@ -94,12 +94,12 @@ class TerminalLogger:
         success: bool = True
     ) -> None:
         """Log bot output/response"""
-        # Truncate long responses for console
+        
         display_response = response
         if len(response) > 200:
             display_response = response[:200] + "... [truncated]"
 
-        # Remove code block formatting for cleaner console output
+        
         display_response = display_response.replace('```', '').strip()
 
         color = 'GREEN' if success else 'RED'

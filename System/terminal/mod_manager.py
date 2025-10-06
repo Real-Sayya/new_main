@@ -13,7 +13,7 @@ class ModerationManager:
     async def setup_database(self):
         """Initialize moderation database"""
         async with aiosqlite.connect(self.db_path) as db:
-            # Cases table - stores all moderation actions
+            
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS cases (
                     case_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +29,7 @@ class ModerationManager:
                 )
             """)
 
-            # Warnings table - tracks user warnings count
+            
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS warnings (
                     user_id INTEGER PRIMARY KEY,
@@ -39,7 +39,7 @@ class ModerationManager:
                 )
             """)
 
-            # Mod logs table - detailed action logs
+            
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS mod_logs (
                     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,7 +71,7 @@ class ModerationManager:
             await db.commit()
             case_id = cursor.lastrowid
 
-            # Log the action
+            
             await self._log_action(case_id, guild_id, action_type,
                                   f"User: {user_id}, Mod: {moderator_id}, Reason: {reason}")
 
@@ -80,7 +80,7 @@ class ModerationManager:
     async def add_warning(self, guild_id: int, user_id: int) -> int:
         """Add a warning to a user and return new warn count"""
         async with aiosqlite.connect(self.db_path) as db:
-            # Check if user exists
+            
             cursor = await db.execute("""
                 SELECT warn_count FROM warnings WHERE user_id = ? AND guild_id = ?
             """, (user_id, guild_id))

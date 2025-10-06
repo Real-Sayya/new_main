@@ -29,13 +29,13 @@ class AdminCommands:
             if role not in ['user', 'admin']:
                 return format_error("Role must be 'user' or 'admin'")
 
-            # Check if user exists in database
+            
             async with aiosqlite.connect(self.um.db_path) as db:
                 cursor = await db.execute("SELECT username, role FROM users WHERE discord_id = ?", (target_discord_id,))
                 result = await cursor.fetchone()
 
                 if not result:
-                    # Fetch Discord username for better error message
+                    
                     try:
                         discord_user = await self.bot.fetch_user(target_discord_id)
                         discord_name = discord_user.name
@@ -49,15 +49,15 @@ class AdminCommands:
 
                 username, current_role = result
 
-                # Check if role is already set
+                
                 if current_role == role:
                     return format_error(f"User '{username}' already has role '{role}'")
 
-                # Update role
+                
                 await db.execute("UPDATE users SET role = ? WHERE discord_id = ?", (role, target_discord_id))
                 await db.commit()
 
-                # Update session if user is logged in
+                
                 if target_discord_id in self.um.sessions:
                     self.um.sessions[target_discord_id]['role'] = role
 
@@ -91,17 +91,17 @@ class AdminCommands:
         except ValueError:
             return format_error("Invalid Discord ID - must be a number")
 
-        # Prevent self-demotion
+        
         if target_discord_id == discord_id:
             return format_error("Cannot remove your own admin rights")
 
         async with aiosqlite.connect(self.um.db_path) as db:
-            # Check if user exists and get current role
+            
             cursor = await db.execute("SELECT username, role FROM users WHERE discord_id = ?", (target_discord_id,))
             result = await cursor.fetchone()
 
             if not result:
-                # Fetch Discord username for better error message
+                
                 try:
                     discord_user = await self.bot.fetch_user(target_discord_id)
                     discord_name = discord_user.name
@@ -115,15 +115,15 @@ class AdminCommands:
 
             username, current_role = result
 
-            # Check if user is already a regular user
+            
             if current_role == 'user':
                 return format_error(f"User '{username}' already has role 'user' (no admin rights)")
 
-            # Remove admin rights (set to user)
+            
             await db.execute("UPDATE users SET role = 'user' WHERE discord_id = ?", (target_discord_id,))
             await db.commit()
 
-            # Update session if user is logged in
+            
             if target_discord_id in self.um.sessions:
                 self.um.sessions[target_discord_id]['role'] = 'user'
 
@@ -165,7 +165,7 @@ class AdminCommands:
                 await db.execute("UPDATE users SET role = ? WHERE username = ?", (value, username))
                 await db.commit()
 
-                # Update session if user is logged in
+                
                 target_discord_id = result[0]
                 if target_discord_id in self.um.sessions:
                     self.um.sessions[target_discord_id]['role'] = value

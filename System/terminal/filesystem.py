@@ -44,24 +44,24 @@ class VirtualFilesystem:
         default_files = self.config['default_filesystem']['files']
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Create user's home directory
+            
             user_home = f"/home/{username}"
             await self.create_directory(discord_id, user_home, db)
 
-            # Create subdirectories in user home
+            
             for subdir in ['documents', 'downloads', '.config']:
                 await self.create_directory(discord_id, f"{user_home}/{subdir}", db)
 
-            # Create default directories (if not exist)
+            
             for directory in default_dirs:
-                # Skip creating /home since we create user-specific ones
+                
                 if directory != "/home":
                     await self.create_directory(discord_id, directory, db)
 
-            # Create default files
+            
             for filepath, filedata in default_files.items():
                 content = filedata.get('content', '')
-                # Replace {username} placeholder
+                
                 content = content.replace('{username}', username)
 
                 file_type = filedata.get('type', 'file')
@@ -86,11 +86,11 @@ class VirtualFilesystem:
             db = await aiosqlite.connect(self.db_path)
 
         try:
-            # Normalize path
+            
             path = self.normalize_path(path)
             name = Path(path).name or '/'
 
-            # Check if already exists
+            
             cursor = await db.execute(
                 "SELECT id FROM filesystem WHERE owner_id = ? AND path = ?",
                 (owner_id, path)
@@ -98,7 +98,7 @@ class VirtualFilesystem:
             if await cursor.fetchone():
                 return False, "Directory already exists"
 
-            # Insert directory
+            
             await db.execute("""
                 INSERT INTO filesystem (owner_id, path, name, type, permissions)
                 VALUES (?, ?, ?, 'directory', 'rwxr-xr-x')
@@ -124,7 +124,7 @@ class VirtualFilesystem:
             name = Path(path).name
             size = len(content)
 
-            # Check if already exists
+            
             cursor = await db.execute(
                 "SELECT id FROM filesystem WHERE owner_id = ? AND path = ?",
                 (owner_id, path)
@@ -201,7 +201,7 @@ class VirtualFilesystem:
         path = self.normalize_path(path)
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Check if path exists and is a directory
+            
             cursor = await db.execute("""
                 SELECT type FROM filesystem
                 WHERE owner_id = ? AND path = ?
@@ -214,7 +214,7 @@ class VirtualFilesystem:
             if result[0] != 'directory':
                 return False, f"{path} is not a directory"
 
-            # List contents
+            
             search_pattern = f"{path}/%"
             if path == '/':
                 search_pattern = '/%'
@@ -228,7 +228,7 @@ class VirtualFilesystem:
 
             entries = await cursor.fetchall()
 
-            # Filter hidden files if not show_all
+            
             if not show_all:
                 entries = [e for e in entries if not e[0].startswith('.')]
 
@@ -250,7 +250,7 @@ class VirtualFilesystem:
 
             item_type = result[0]
 
-            # If directory, check if empty or recursive
+            
             if item_type == 'directory':
                 cursor = await db.execute("""
                     SELECT COUNT(*) FROM filesystem
@@ -261,7 +261,7 @@ class VirtualFilesystem:
                 if count > 0 and not recursive:
                     return False, f"Directory not empty. Use 'rm -r' to remove recursively"
 
-                # Remove directory and all contents
+                
                 if recursive:
                     await db.execute("""
                         DELETE FROM filesystem
@@ -273,7 +273,7 @@ class VirtualFilesystem:
                         WHERE owner_id = ? AND path = ?
                     """, (owner_id, path))
             else:
-                # Remove file
+                
                 await db.execute("""
                     DELETE FROM filesystem
                     WHERE owner_id = ? AND path = ?
@@ -310,11 +310,11 @@ class VirtualFilesystem:
         if not path.startswith('/'):
             path = '/' + path
 
-        # Remove trailing slash except for root
+        
         if path != '/' and path.endswith('/'):
             path = path.rstrip('/')
 
-        # Resolve . and ..
+        
         parts = []
         for part in path.split('/'):
             if part == '' or part == '.':
@@ -330,10 +330,10 @@ class VirtualFilesystem:
     def resolve_path(self, current_dir: str, target_path: str) -> str:
         """Resolve relative or absolute path"""
         if target_path.startswith('/'):
-            # Absolute path
+            
             return self.normalize_path(target_path)
         else:
-            # Relative path
+            
             combined = f"{current_dir}/{target_path}"
             return self.normalize_path(combined)
 
@@ -368,7 +368,7 @@ class VirtualFilesystem:
         destination = self.normalize_path(destination)
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Check if source exists
+            
             cursor = await db.execute("""
                 SELECT type FROM filesystem WHERE owner_id = ? AND path = ?
             """, (owner_id, source))
@@ -377,7 +377,7 @@ class VirtualFilesystem:
             if not source_data:
                 return False, f"Source not found: {source}"
 
-            # Check if destination already exists
+            
             cursor = await db.execute("""
                 SELECT type FROM filesystem WHERE owner_id = ? AND path = ?
             """, (owner_id, destination))
@@ -386,13 +386,13 @@ class VirtualFilesystem:
 
             source_type = source_data[0]
 
-            # Update path for the item
+            
             await db.execute("""
                 UPDATE filesystem SET path = ?, name = ?, modified_at = ?
                 WHERE owner_id = ? AND path = ?
             """, (destination, Path(destination).name, datetime.now(), owner_id, source))
 
-            # If directory, update all children paths
+            
             if source_type == 'directory':
                 cursor = await db.execute("""
                     SELECT path FROM filesystem
@@ -416,7 +416,7 @@ class VirtualFilesystem:
         destination = self.normalize_path(destination)
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Check if source exists
+            
             cursor = await db.execute("""
                 SELECT type, content, permissions, executable FROM filesystem
                 WHERE owner_id = ? AND path = ?
@@ -428,14 +428,14 @@ class VirtualFilesystem:
 
             source_type, content, permissions, executable = source_data
 
-            # Check if destination exists
+            
             cursor = await db.execute("""
                 SELECT type FROM filesystem WHERE owner_id = ? AND path = ?
             """, (owner_id, destination))
             if await cursor.fetchone():
                 return False, f"Destination already exists: {destination}"
 
-            # Copy based on type
+            
             if source_type == 'file':
                 size = len(content) if content else 0
                 await db.execute("""
@@ -447,13 +447,13 @@ class VirtualFilesystem:
                 if not recursive:
                     return False, "Cannot copy directory without -r flag"
 
-                # Create destination directory
+                
                 await db.execute("""
                     INSERT INTO filesystem (owner_id, path, name, type, permissions)
                     VALUES (?, ?, ?, 'directory', ?)
                 """, (owner_id, destination, Path(destination).name, permissions))
 
-                # Copy all children
+                
                 cursor = await db.execute("""
                     SELECT path, name, type, content, size, permissions, executable FROM filesystem
                     WHERE owner_id = ? AND path LIKE ?
@@ -476,7 +476,7 @@ class VirtualFilesystem:
         """Change file permissions (chmod)"""
         path = self.normalize_path(path)
 
-        # Validate mode (simple rwx format or octal)
+        
         if not self._is_valid_mode(mode):
             return False, f"Invalid permissions mode: {mode}"
 
@@ -488,10 +488,10 @@ class VirtualFilesystem:
             if not await cursor.fetchone():
                 return False, f"File not found: {path}"
 
-            # Convert mode to rwx format if octal
+            
             permissions = self._mode_to_permissions(mode)
 
-            # Update executable flag based on permissions
+            
             executable = 1 if 'x' in permissions[:3] else 0
 
             await db.execute("""
@@ -520,7 +520,7 @@ class VirtualFilesystem:
             cursor = await db.execute(query, params)
             results = await cursor.fetchall()
 
-            # Filter by pattern if provided
+            
             if pattern:
                 results = [r for r in results if pattern.lower() in r[1].lower()]
 
@@ -543,7 +543,7 @@ class VirtualFilesystem:
             cursor = await db.execute(query, params)
             results = await cursor.fetchall()
 
-            # Format results with line numbers
+            
             formatted_results = []
             for path, name, content in results:
                 if content:
@@ -587,11 +587,11 @@ class VirtualFilesystem:
 
     def _is_valid_mode(self, mode: str) -> bool:
         """Validate chmod mode string"""
-        # Check if octal (e.g., 755)
+        
         if mode.isdigit() and len(mode) == 3:
             return all(0 <= int(d) <= 7 for d in mode)
 
-        # Check if symbolic (e.g., rwxr-xr-x)
+        
         if len(mode) == 9:
             valid_chars = set('rwx-')
             return all(c in valid_chars for c in mode)
@@ -601,7 +601,7 @@ class VirtualFilesystem:
     def _mode_to_permissions(self, mode: str) -> str:
         """Convert mode to permission string"""
         if mode.isdigit():
-            # Octal to rwx
+            
             perms = ''
             for digit in mode:
                 d = int(digit)
@@ -614,7 +614,7 @@ class VirtualFilesystem:
 
     def check_permission(self, permissions: str, action: str) -> bool:
         """Check if action is allowed based on permissions"""
-        # Simple owner permissions check (first 3 chars)
+        
         owner_perms = permissions[:3]
 
         permission_map = {

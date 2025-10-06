@@ -12,15 +12,15 @@ import os
 import chat_exporter
 import io
 from Data.permissons import admin
+from config import TOKEN
 
 pyfiglet.print_figlet('GSv2.0')
-TOKEN = 'MTM3ODEwNDU5Mjg4MDg5ODA0OQ.GK1gPH.wr4TYuwUOOpt4oNneCmOgtydrigZ37noW3dy88'
 bot = commands.Bot(command_prefix='!', debug_guilds=None, intents=discord.Intents.all())
 conn: aiosqlite.Connection = None
 
 TICKET_CATEGORIES = {
     "allgemein": {
-        "role_ids": [1331410805786279998],  # Mehrere Rollen-IDs als Liste
+        "role_ids": [1331410805786279998],  
         "keywords": [
             "frage", "hilfe", "support", "problem", "info", "anfrage", "allgemein", "chat",
             "ich habe eine frage", "wie funktioniert das?", "wer kann mir helfen?",
@@ -29,7 +29,7 @@ TICKET_CATEGORIES = {
         "channel_prefix": "📋-allgemein"
     },
     "technisch": {
-        "role_ids": [1331410875835219968],  # Mehrere Rollen-IDs als Liste
+        "role_ids": [1331410875835219968],  
         "keywords": [
             "bug", "fehler", "funktioniert nicht", "error", "problem", "bot", "discord",
             "crash", "technisch", "update", "es gibt ein problem",
@@ -38,7 +38,7 @@ TICKET_CATEGORIES = {
         "channel_prefix": "🔧-technisch"
     },
     "moderation": {
-        "role_ids": [1331409215096488016, 1331408653193838592],  # Zwei Rollen-IDs als Beispiel
+        "role_ids": [1331409215096488016, 1331408653193838592],  
         "keywords": [
             "warnung", "bann", "kick", "mute", "report", "melden", "user", "spam",
             "regel", "admin", "verstoß", "jemand spammt", "ein user benimmt sich schlecht",
@@ -48,7 +48,7 @@ TICKET_CATEGORIES = {
         "channel_prefix": "🛡️-admin"
     },
     "partner": {
-        "role_ids": [1331409215096488016],  # Mehrere Rollen-IDs als Liste
+        "role_ids": [1331409215096488016],  
         "keywords": [
             "partner", "werbung", "kollaboration", "zusammenarbeit", "kooperation", "promo",
             "wir möchten zusammenarbeiten", "können wir partner werden?", "partneranfrage",
@@ -96,7 +96,7 @@ async def setup_database():
     global conn
     conn = await aiosqlite.connect("Data/tickets.db")
 
-    # Create tickets table
+    
     await conn.execute(
         """CREATE TABLE IF NOT EXISTS tickets (
             channel_id INTEGER PRIMARY KEY,
@@ -107,13 +107,13 @@ async def setup_database():
             claimed_at TIMESTAMP
         )""")
     table_info = await conn.execute_fetchall("PRAGMA table_info(tickets)")
-    if not any(column[1] == "category" for column in table_info):  # column[1] is the name
+    if not any(column[1] == "category" for column in table_info):  
         await conn.execute("""
             ALTER TABLE tickets 
             ADD COLUMN category TEXT DEFAULT 'allgemein'
         """)
 
-    # Add category stats table
+    
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS category_stats (
             category TEXT PRIMARY KEY,
@@ -123,7 +123,7 @@ async def setup_database():
         )
     """)
 
-    # Create ticket queue table
+    
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS ticket_queue (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -132,7 +132,7 @@ async def setup_database():
         )
     """)
 
-    # Create pending tickets table
+    
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS pending_tickets (
             user_id INTEGER PRIMARY KEY,
@@ -140,7 +140,7 @@ async def setup_database():
         )
     """)
 
-    # Create ticket stats table
+    
     table_info = await conn.execute("PRAGMA table_info(tickets)")
     table_info = await table_info.fetchall()
     if not any(column[1] == "category" for column in table_info):
@@ -164,11 +164,11 @@ async def setup_database():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )""")
     else:
-        # Check if total_response_time column exists
+        
         cursor = await conn.execute("PRAGMA table_info(ticket_stats)")
         columns = await cursor.fetchall()
         if not any(column[1] == "total_response_time" for column in columns):
-            # Add the missing column
+            
             await conn.execute(
                 "ALTER TABLE ticket_stats ADD COLUMN total_response_time REAL DEFAULT 0")
             print("Added total_response_time column to ticket_stats table")
@@ -206,7 +206,7 @@ async def categorize_ticket(message_content: str) -> str:
             if keyword in message_content:
                 category_scores[category] += 1
 
-    # Wenn keine Kategorie gefunden wurde, verwende "allgemein"
+    
     best_category = max(category_scores.items(), key=lambda x: x[1])[0]
     return best_category if category_scores[best_category] > 0 else "allgemein"
 
@@ -366,22 +366,22 @@ async def create_ticket(user_id, message):
     guild = bot.get_guild(guild_id)
     category = guild.get_channel(category_id)
 
-    # Kategorisiere das Ticket basierend auf der ersten Nachricht
+    
     ticket_category = await categorize_ticket(message.content)
     category_data = TICKET_CATEGORIES[ticket_category]
 
-    # Create the channel with category prefix
+    
     channel_name = f"{category_data['channel_prefix']}-{message.author.name}"
     channel = await category.create_text_channel(channel_name)
 
-    # Insert ticket into database with category
+    
     await conn.execute("""
         INSERT INTO tickets (user_id, channel_id, category) 
         VALUES (?, ?, ?)
     """, (user_id, channel.id, ticket_category))
     await conn.commit()
 
-    # Send confirmation to user
+    
     user_embed = discord.Embed(
         title="Ticket erstellt",
         description=f"Dein Ticket wurde erfolgreich in der Kategorie '{ticket_category}' erstellt. "
@@ -440,9 +440,9 @@ def remove_emojis(string):
     return emoji_pattern.sub(r'', string)
 
 
-#emoji = ("📝")
-#unicode_codepoint = hex(ord(emoji))
-#print(unicode_codepoint)
+
+
+
 
 
 @slash_command(description="Zeige Ticket-Statistiken")
@@ -477,7 +477,7 @@ async def ticket_stats(
                 timestamp=datetime.datetime.now())
             embed.set_thumbnail(url=user.display_avatar.url)
 
-            # Include rating information in stats
+            
             avg_rating = stats[5]
             total_ratings = stats[6]
             stars = "⭐" * round(avg_rating)
@@ -520,18 +520,18 @@ async def on_message(message: discord.Message):
     if message.author.bot:
         return
 
-    # Handle DM messages
+    
     if isinstance(message.channel, discord.DMChannel):
-        # Check if user is in ticket creation process
+        
         cursor = await conn.execute("SELECT * FROM pending_tickets WHERE user_id = ?", (message.author.id,))
         pending_ticket = await cursor.fetchone()
 
         if pending_ticket:
-            # Remove pending ticket status
+            
             await conn.execute("DELETE FROM pending_tickets WHERE user_id = ?", (message.author.id,))
             await conn.commit()
 
-            # Create the ticket
+            
             await create_or_queue_ticket(message.author.id, message)
             return
         cursor = await conn.execute("SELECT channel_id FROM tickets WHERE user_id = ?", (message.author.id,))
@@ -546,12 +546,12 @@ async def on_message(message: discord.Message):
                 await message.channel.send(embed=welcome_embed, view=DMMenu())
                 return
 
-        # Wenn der User bereits ein Ticket hat
+        
         if ticket:
             channel_id = ticket[0]
             channel = await bot.fetch_channel(channel_id)
 
-            # Nachricht an den Ticket-Channel senden
+            
             embed = discord.Embed(description=f"{message.content}", color=discord.Color.green())
             embed.set_author(name=message.author, icon_url=message.author.avatar.url)
             if message.attachments:
@@ -560,7 +560,7 @@ async def on_message(message: discord.Message):
 
             await message.add_reaction("✅")
 
-    # Nachrichten im Ticket-Channel
+    
     elif message.channel.category_id == category_id and not isinstance(message.channel, discord.DMChannel):
         cursor = await conn.execute("SELECT user_id FROM tickets WHERE channel_id = ?", (message.channel.id,))
         row = await cursor.fetchone()
@@ -585,19 +585,19 @@ async def on_message(message: discord.Message):
 
         await message.add_reaction("✅")
 
-    # Integration des gewünschten Codes
+    
     elif isinstance(message.channel, discord.DMChannel):
-        # Überprüfen, ob der Benutzer ein Ticket erstellt
+        
         if message.content.lower() == "ticket":
             cursor = await conn.execute("SELECT channel_id FROM tickets WHERE user_id = ?", (message.author.id,))
             ticket = await cursor.fetchone()
 
             if not ticket:
-                # Ticket erstellen
-                guild = bot.get_guild(guild_id)  # Ersetze GUILD_ID mit deiner Server-ID
-                category = discord.utils.get(guild.categories, id=category_id)  # Ersetze CATEGORY_ID
+                
+                guild = bot.get_guild(guild_id)  
+                category = discord.utils.get(guild.categories, id=category_id)  
                 channel = await category.create_text_channel(name=f"ticket-{message.author.name}")
-                teamping = "<@&ROLE_ID>"  # Rolle ersetzen
+                teamping = "<@&ROLE_ID>"  
 
                 embed = discord.Embed(
                     title="WILLKOMMEN IM TICKET-SUPPORT!",
@@ -610,15 +610,15 @@ async def on_message(message: discord.Message):
                     color=discord.Color.green()
                 )
 
-                # Nachricht an den User senden
+                
                 await message.channel.send(embed=embed)
 
-                # Nachrichten im Ticket-Kanal senden
+                
                 await channel.send(teamping)
-                await asyncio.sleep(0.5)  # Kurze Pause zwischen den Nachrichten
+                await asyncio.sleep(0.5)  
                 await channel.send(embed=team_embed, view=TutorialView())
 
-                # Datenbank aktualisieren
+                
                 await conn.execute("INSERT INTO tickets (user_id, channel_id) VALUES (?, ?)",
                                    (message.author.id, channel.id))
                 await conn.commit()
@@ -669,7 +669,7 @@ class Ticketweiterleitung(discord.ui.View):
             user_id_tuple = await cursor.fetchone()
             user_id = user_id_tuple[0]
             user = bot.get_user(user_id)
-            admin = '<@&1234626364737585244>'  # hier teamping definieren !!!
+            admin = '<@&1234626364737585244>'  
             if user is None:
                 user = await bot.fetch_user(user_id)
             embed = discord.Embed(
@@ -834,11 +834,11 @@ class Ticketmenu(discord.ui.View):
 
             user_id, claimed_by, claimed_at = ticket_data
 
-            # Update statistics if the ticket was claimed
+            
             if claimed_by:
                 await update_ticket_stats(claimed_by, "close")
                 if claimed_at:
-                    # Calculate response time in minutes
+                    
                     response_time = (datetime.datetime.now() - datetime.datetime.fromisoformat(
                         claimed_at)).total_seconds() / 60
                     await update_ticket_stats(claimed_by, None, response_time)
@@ -847,7 +847,7 @@ class Ticketmenu(discord.ui.View):
             category = guild.get_channel(category_id)
             log_channel = guild.get_channel(log_channel_id)
 
-            # Export chat history before closing
+            
             transcript = await chat_exporter.export(
                 interaction.channel,
                 limit=None,
@@ -884,7 +884,7 @@ class Ticketmenu(discord.ui.View):
 
             await interaction.response.send_message("Ticket wird geschlossen!")
 
-            # Create closure embed and feedback request in the same message
+            
             close_embed = discord.Embed(
                 title="Ticket geschlossen!",
                 description=f"Das Ticket wurde von {interaction.user.mention} geschlossen.",
@@ -899,13 +899,13 @@ class Ticketmenu(discord.ui.View):
                 color=discord.Color.blue()
             )
 
-            # Send both embeds with feedback buttons
+            
             await user.send(embeds=[close_embed, feedback_embed],
                             view=FeedbackView(str(interaction.channel.id), claimed_by))
 
             await interaction.message.channel.delete()
 
-            # Handle queued tickets
+            
             cursor = await conn.execute("SELECT user_id FROM ticket_queue ORDER BY created_at LIMIT 1")
             queued_ticket = await cursor.fetchone()
 
@@ -938,14 +938,14 @@ class Ticketmenu(discord.ui.View):
                 await interaction.response.send_message("Dieses Ticket wurde bereits beansprucht!", ephemeral=True)
                 return
 
-            # Update ticket claim status
+            
             await conn.execute(
                 "UPDATE tickets SET claimed_by = ?, claimed_at = ? WHERE channel_id = ?",
                 (interaction.user.id, datetime.datetime.now(), interaction.channel.id)
             )
             await conn.commit()
 
-            # Update statistics
+            
             await update_ticket_stats(interaction.user.id, "handle")
 
             user = bot.get_user(user_id) or await bot.fetch_user(user_id)
@@ -985,11 +985,11 @@ class Ticketmenu(discord.ui.View):
                 @discord.ui.button(label="Ja, schließen", style=discord.ButtonStyle.green, custom_id="accept_close")
                 async def accept_callback(self, button, interaction):
                     try:
-                        # Deaktiviere alle Buttons
+                        
                         for item in self.children:
                             item.disabled = True
 
-                        # Aktualisiere die Message mit deaktivierten Buttons
+                        
                         await interaction.message.edit(view=self)
                         await interaction.response.send_message("Ticket wird geschlossen...", ephemeral=True)
 
@@ -997,7 +997,7 @@ class Ticketmenu(discord.ui.View):
                         channel = guild.get_channel(self.channel_id)
 
                         if channel:
-                            # Get ticket data for statistics before deleting
+                            
                             cursor = await conn.execute(
                                 "SELECT claimed_by, claimed_at FROM tickets WHERE channel_id = ?",
                                 (self.channel_id,))
@@ -1030,14 +1030,14 @@ class Ticketmenu(discord.ui.View):
                                 color=discord.Color.blue()
                             )
 
-                            # Send both embeds with feedback buttons
+                            
                             await self.user.send(embeds=[close_embed, feedback_embed],
                                                 view=FeedbackView(str(self.channel_id), claimed_by))
                             await channel.send("Ticket wird in 5 Sekunden geschlossen.")
                             await asyncio.sleep(5)
                             await channel.delete()
 
-                            # Handle queued tickets
+                            
                             await self.handle_queued_tickets(guild)
 
                     except Exception as e:
@@ -1047,11 +1047,11 @@ class Ticketmenu(discord.ui.View):
                 @discord.ui.button(label="Nein, offen lassen", style=discord.ButtonStyle.red, custom_id="reject_close")
                 async def reject_callback(self, button, interaction):
                     try:
-                        # Deaktiviere alle Buttons
+                        
                         for item in self.children:
                             item.disabled = True
 
-                        # Aktualisiere die Message mit deaktivierten Buttons
+                        
                         await interaction.message.edit(view=self)
 
                         guild = bot.get_guild(guild_id)
@@ -1160,7 +1160,7 @@ class DMMenu(discord.ui.View):
                                                         ephemeral=True)
                 return
 
-            # Set a flag in the database to indicate this user is in the ticket creation process
+            
             await conn.execute("""CREATE TABLE IF NOT EXISTS pending_tickets 
                                     (user_id INTEGER PRIMARY KEY, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)""")
             await conn.execute("INSERT OR REPLACE INTO pending_tickets (user_id) VALUES (?)", (interaction.user.id,))
@@ -1273,7 +1273,7 @@ class FeedbackModal(discord.ui.Modal):
         self.ticket_id = ticket_id
         self.team_member_id = team_member_id
         self.rating = rating
-        self.original_view = original_view  # Corrected spelling
+        self.original_view = original_view  
 
         self.feedback = discord.ui.InputText(
             label="Zusätzliches Feedback (optional)",
@@ -1287,14 +1287,14 @@ class FeedbackModal(discord.ui.Modal):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
 
-        # Save the feedback to database
+        
         await self.save_feedback(
             user_id=interaction.user.id,
             rating=self.rating,
             feedback_text=self.feedback.value
         )
 
-        # Create thank you embed
+        
         thank_you_embed = discord.Embed(
             title="Danke für dein Feedback!",
             description=f"Du hast {self.rating} {'Stern' if self.rating == 1 else 'Sterne'} gegeben.",
@@ -1303,13 +1303,13 @@ class FeedbackModal(discord.ui.Modal):
         if self.feedback.value:
             thank_you_embed.add_field(
                 name="Dein Feedback",
-                value=self.feedback.value[:1024],  # Discord embed field limit
+                value=self.feedback.value[:1024],  
                 inline=False
             )
 
         await interaction.followup.send(embed=thank_you_embed, ephemeral=True)
 
-        # Update the original message
+        
         original_message = interaction.message
         if self.original_view:
             for child in self.original_view.children:
@@ -1335,7 +1335,7 @@ class FeedbackModal(discord.ui.Modal):
 
 class FeedbackView(discord.ui.View):
     def __init__(self, ticket_id: str, team_member_id: int):
-        super().__init__(timeout=600)  # 10 minute timeout
+        super().__init__(timeout=600)  
         self.ticket_id = ticket_id
         self.team_member_id = team_member_id
 
@@ -1365,7 +1365,7 @@ class FeedbackView(discord.ui.View):
 
     async def update_team_member_stats(self, rating: int):
         async with aiosqlite.connect("tickets.db") as db:
-            # Get current stats
+            
             cursor = await db.execute("""
                 SELECT avg_rating, total_ratings 
                 FROM ticket_stats 
@@ -1380,11 +1380,11 @@ class FeedbackView(discord.ui.View):
                 current_avg = stats[0] or 0
                 total_ratings = stats[1] or 0
 
-            # Calculate new average
+            
             new_total = total_ratings + 1
             new_avg = ((current_avg * total_ratings) + rating) / new_total
 
-            # Update stats
+            
             await db.execute("""
                 UPDATE ticket_stats 
                 SET avg_rating = ?, total_ratings = ?

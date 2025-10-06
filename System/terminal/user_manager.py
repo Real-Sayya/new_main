@@ -12,7 +12,7 @@ class UserManager:
         self.config_path = "Data/terminal_config.json"
         self.admin_config_path = "Data/terminal_admins.json"
         self.config = self.load_config()
-        self.sessions = {}  # {discord_id: {'username': str, 'role': str, 'login_time': datetime, 'current_dir': str}}
+        self.sessions = {}  
 
     def load_config(self):
         """Load configuration from JSON"""
@@ -91,37 +91,37 @@ class UserManager:
         Register a new user
         Returns: (success: bool, message: str)
         """
-        # Validate username
+        
         if len(username) < 3:
             return False, "Username must be at least 3 characters long"
 
         if not username.isalnum():
             return False, "Username must be alphanumeric"
 
-        # Validate password
+        
         min_length = self.config['settings']['password_min_length']
         if len(password) < min_length:
             return False, f"Password must be at least {min_length} characters long"
 
-        # Hash password
+        
         password_hash = self.hash_password(password)
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Check if user already exists
+            
             cursor = await db.execute("SELECT discord_id FROM users WHERE discord_id = ?", (discord_id,))
             if await cursor.fetchone():
                 return False, "You already have an account. Use 'login' instead."
 
-            # Check if username is taken
+            
             cursor = await db.execute("SELECT username FROM users WHERE username = ?", (username,))
             if await cursor.fetchone():
                 return False, f"Username '{username}' is already taken"
 
-            # Check if user is admin from JSON config
+            
             if self.is_admin_by_discord_id(discord_id):
                 role = 'admin'
 
-            # Insert new user
+            
             try:
                 await db.execute("""
                     INSERT INTO users (discord_id, username, password_hash, role)
@@ -129,7 +129,7 @@ class UserManager:
                 """, (discord_id, username, password_hash, role))
                 await db.commit()
 
-                # Log registration
+                
                 await db.execute("""
                     INSERT INTO login_history (discord_id, username, action)
                     VALUES (?, ?, 'register')
@@ -147,7 +147,7 @@ class UserManager:
         Returns: (success: bool, message: str)
         """
         async with aiosqlite.connect(self.db_path) as db:
-            # Get user data by discord_id
+            
             cursor = await db.execute("""
                 SELECT username, password_hash, role, failed_login_attempts, locked_until
                 FROM users WHERE discord_id = ?
@@ -159,29 +159,29 @@ class UserManager:
 
             db_username, password_hash, role, failed_attempts, locked_until = user_data
 
-            # Verify username matches
+            
             if db_username != username:
                 return False, f"Incorrect username. Your account is registered as '{db_username}'"
 
-            # Check if account is locked
+            
             if locked_until:
                 lock_time = datetime.fromisoformat(locked_until)
                 if datetime.now() < lock_time:
                     remaining = (lock_time - datetime.now()).seconds // 60
                     return False, f"Account locked. Try again in {remaining} minutes."
                 else:
-                    # Unlock account
+                    
                     await db.execute("UPDATE users SET locked_until = NULL, failed_login_attempts = 0 WHERE discord_id = ?", (discord_id,))
                     await db.commit()
 
-            # Verify password
+            
             if not self.verify_password(password, password_hash):
                 failed_attempts += 1
                 await db.execute("UPDATE users SET failed_login_attempts = ? WHERE discord_id = ?", (failed_attempts, discord_id))
 
                 max_attempts = self.config['settings']['max_failed_login_attempts']
                 if failed_attempts >= max_attempts:
-                    # Lock account for 15 minutes
+                    
                     lock_until = datetime.now() + timedelta(minutes=15)
                     await db.execute("UPDATE users SET locked_until = ? WHERE discord_id = ?", (lock_until, discord_id))
                     await db.commit()
@@ -194,15 +194,15 @@ class UserManager:
                 remaining = max_attempts - failed_attempts
                 return False, f"Incorrect password. {remaining} attempts remaining."
 
-            # Reset failed attempts
+            
             await db.execute("UPDATE users SET failed_login_attempts = 0, last_login = ? WHERE discord_id = ?", (datetime.now(), discord_id))
             await db.commit()
 
-            # Log successful login
+            
             await db.execute("INSERT INTO login_history (discord_id, username, action) VALUES (?, ?, 'login')", (discord_id, username))
             await db.commit()
 
-        # Create session
+        
         self.sessions[discord_id] = {
             'username': username,
             'role': role,
@@ -210,7 +210,7 @@ class UserManager:
             'current_dir': f'/home/{username}'
         }
 
-        # Assign Discord role
+        
         member = guild.get_member(discord_id)
         if member:
             await self.assign_discord_role(member, role)
@@ -223,7 +223,7 @@ class UserManager:
         Returns: (success: bool, message: str)
         """
         async with aiosqlite.connect(self.db_path) as db:
-            # Get user data
+            
             cursor = await db.execute("""
                 SELECT username, password_hash, role, failed_login_attempts, locked_until
                 FROM users WHERE discord_id = ?
@@ -235,25 +235,25 @@ class UserManager:
 
             username, password_hash, role, failed_attempts, locked_until = user_data
 
-            # Check if account is locked
+            
             if locked_until:
                 lock_time = datetime.fromisoformat(locked_until)
                 if datetime.now() < lock_time:
                     remaining = (lock_time - datetime.now()).seconds // 60
                     return False, f"Account locked. Try again in {remaining} minutes."
                 else:
-                    # Unlock account
+                    
                     await db.execute("UPDATE users SET locked_until = NULL, failed_login_attempts = 0 WHERE discord_id = ?", (discord_id,))
                     await db.commit()
 
-            # Verify password
+            
             if not self.verify_password(password, password_hash):
                 failed_attempts += 1
                 await db.execute("UPDATE users SET failed_login_attempts = ? WHERE discord_id = ?", (failed_attempts, discord_id))
 
                 max_attempts = self.config['settings']['max_failed_login_attempts']
                 if failed_attempts >= max_attempts:
-                    # Lock account for 15 minutes
+                    
                     lock_until = datetime.now() + timedelta(minutes=15)
                     await db.execute("UPDATE users SET locked_until = ? WHERE discord_id = ?", (lock_until, discord_id))
                     await db.commit()
@@ -266,15 +266,15 @@ class UserManager:
                 remaining = max_attempts - failed_attempts
                 return False, f"Incorrect password. {remaining} attempts remaining."
 
-            # Reset failed attempts
+            
             await db.execute("UPDATE users SET failed_login_attempts = 0, last_login = ? WHERE discord_id = ?", (datetime.now(), discord_id))
             await db.commit()
 
-            # Log successful login
+            
             await db.execute("INSERT INTO login_history (discord_id, username, action) VALUES (?, ?, 'login')", (discord_id, username))
             await db.commit()
 
-        # Create session
+        
         self.sessions[discord_id] = {
             'username': username,
             'role': role,
@@ -282,7 +282,7 @@ class UserManager:
             'current_dir': f'/home/{username}'
         }
 
-        # Assign Discord role
+        
         member = guild.get_member(discord_id)
         if member:
             await self.assign_discord_role(member, role)
@@ -300,15 +300,15 @@ class UserManager:
         username = self.sessions[discord_id]['username']
         role = self.sessions[discord_id]['role']
 
-        # Remove session
+        
         del self.sessions[discord_id]
 
-        # Remove Discord role
+        
         member = guild.get_member(discord_id)
         if member:
             await self.remove_discord_role(member, role)
 
-        # Log logout
+        
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("INSERT INTO login_history (discord_id, username, action) VALUES (?, ?, 'logout')", (discord_id, username))
             await db.commit()
@@ -368,11 +368,11 @@ class UserManager:
 
             password_hash = result[0]
 
-            # Verify old password
+            
             if not self.verify_password(old_password, password_hash):
                 return False, "Incorrect current password"
 
-            # Update password
+            
             new_hash = self.hash_password(new_password)
             await db.execute("UPDATE users SET password_hash = ? WHERE discord_id = ?", (new_hash, discord_id))
             await db.commit()
@@ -411,7 +411,7 @@ class UserManager:
         import random
         import string
 
-        # Check if user exists
+        
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute("SELECT username FROM users WHERE discord_id = ?", (discord_id,))
             user = await cursor.fetchone()
@@ -419,11 +419,11 @@ class UserManager:
             if not user:
                 return False, "No account found. Use 'register' to create one."
 
-            # Generate 6-digit code
+            
             reset_code = ''.join(random.choices(string.digits, k=6))
             expires_at = datetime.now() + timedelta(minutes=10)
 
-            # Store reset code (replace existing if any)
+            
             await db.execute("""
                 INSERT OR REPLACE INTO password_reset_tokens (discord_id, reset_code, expires_at, attempts)
                 VALUES (?, ?, ?, 0)
@@ -437,13 +437,13 @@ class UserManager:
         Reset password using verification code
         Returns: (success: bool, message: str)
         """
-        # Validate new password
+        
         min_length = self.config['settings']['password_min_length']
         if len(new_password) < min_length:
             return False, f"New password must be at least {min_length} characters long"
 
         async with aiosqlite.connect(self.db_path) as db:
-            # Get reset token
+            
             cursor = await db.execute("""
                 SELECT reset_code, expires_at, attempts FROM password_reset_tokens
                 WHERE discord_id = ?
@@ -455,20 +455,20 @@ class UserManager:
 
             stored_code, expires_at, attempts = token_data
 
-            # Check expiry
+            
             expiry_time = datetime.fromisoformat(expires_at)
             if datetime.now() > expiry_time:
                 await db.execute("DELETE FROM password_reset_tokens WHERE discord_id = ?", (discord_id,))
                 await db.commit()
                 return False, "Reset code expired. Use 'resetpw' to request a new one."
 
-            # Check attempts (max 3)
+            
             if attempts >= 3:
                 await db.execute("DELETE FROM password_reset_tokens WHERE discord_id = ?", (discord_id,))
                 await db.commit()
                 return False, "Too many failed attempts. Use 'resetpw' to request a new code."
 
-            # Verify code
+            
             if code != stored_code:
                 attempts += 1
                 await db.execute("UPDATE password_reset_tokens SET attempts = ? WHERE discord_id = ?", (attempts, discord_id))
@@ -476,7 +476,7 @@ class UserManager:
                 remaining = 3 - attempts
                 return False, f"Incorrect reset code. {remaining} attempts remaining."
 
-            # Reset password
+            
             new_hash = self.hash_password(new_password)
             await db.execute("""
                 UPDATE users
@@ -484,11 +484,11 @@ class UserManager:
                 WHERE discord_id = ?
             """, (new_hash, discord_id))
 
-            # Delete reset token
+            
             await db.execute("DELETE FROM password_reset_tokens WHERE discord_id = ?", (discord_id,))
             await db.commit()
 
-            # Log password reset
+            
             cursor = await db.execute("SELECT username FROM users WHERE discord_id = ?", (discord_id,))
             username = (await cursor.fetchone())[0]
             await db.execute("""

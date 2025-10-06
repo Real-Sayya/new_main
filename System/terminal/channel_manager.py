@@ -40,12 +40,12 @@ class ChannelManager:
     async def add_trusted_channel(self, channel_id: int, guild_id: int, channel_name: str, added_by: int) -> tuple[bool, str]:
         """Add channel to trusted list"""
         async with aiosqlite.connect(self.db_path) as db:
-            # Check if already exists
+            
             cursor = await db.execute("SELECT channel_id FROM trusted_channels WHERE channel_id = ?", (channel_id,))
             if await cursor.fetchone():
                 return False, f"Channel <#{channel_id}> is already trusted"
 
-            # Add channel
+            
             await db.execute("""
                 INSERT INTO trusted_channels (channel_id, guild_id, channel_name, added_by)
                 VALUES (?, ?, ?, ?)

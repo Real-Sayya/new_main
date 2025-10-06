@@ -9,8 +9,8 @@ class SimpleAI(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.target_channel_id = 1378101589520416809
-        self.ollama_url = "http://localhost:11434/api/chat"  # Ollama API endpoint
-        self.ollama_model = "llama3.2"  # Change to your preferred model (e.g., llama2, mistral, etc.)
+        self.ollama_url = "http://localhost:11434/api/chat"  
+        self.ollama_model = "llama3.2"  
         self.last_message_time = None
         self.load_data()
         self.delete_task.start()
@@ -47,7 +47,7 @@ class SimpleAI(commands.Cog):
 
             messages.append({"role": "user", "content": prompt})
 
-            # Ollama API request
+            
             async with aiohttp.ClientSession() as session:
                 payload = {
                     "model": self.ollama_model,

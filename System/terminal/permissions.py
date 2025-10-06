@@ -38,14 +38,14 @@ class PermissionManager:
         Check if user has permission to execute command
         Returns: (allowed: bool, message: str)
         """
-        # Check if logged in
+        
         if not self.user_manager.is_logged_in(discord_id):
             return False, "You must be logged in to use commands"
 
         session = self.user_manager.get_session(discord_id)
         role = session['role']
 
-        # Admin commands
+        
         admin_commands = [
             'useradd', 'userdel', 'usermod', 'chown', 'chmod',
             'shutdown', 'reboot', 'systemctl'
@@ -72,13 +72,13 @@ class SudoManager:
 
     def __init__(self, user_manager):
         self.user_manager = user_manager
-        self.pending_sudo = {}  # {discord_id: {'command': str, 'args': list, 'timestamp': datetime}}
+        self.pending_sudo = {}  
 
     async def request_sudo_password(self, discord_id: int, command: str, args: list):
         """Request password for sudo command"""
         from datetime import datetime
 
-        # Store pending sudo request
+        
         self.pending_sudo[discord_id] = {
             'command': command,
             'args': args,
@@ -112,7 +112,7 @@ class SudoManager:
 
             password_hash = result[0]
 
-            # Verify password
+            
             if not self.user_manager.verify_password(password, password_hash):
                 return False, "Incorrect password"
 
@@ -136,11 +136,11 @@ class SudoManager:
 
             password_hash, role = result
 
-            # Verify password
+            
             if not self.user_manager.verify_password(password, password_hash):
                 return False, "Incorrect password"
 
-            # Check if user is terminal admin
+            
             if role != 'admin':
                 return False, "Your account does not have root privileges (terminal admin required)"
 

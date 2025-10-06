@@ -16,7 +16,7 @@ class BasicCommands:
         if not session:
             return format_error("Not logged in")
 
-        # Parse arguments
+        
         show_all = '-a' in args or '--all' in args
         long_format = '-l' in args
         target_path = None
@@ -26,14 +26,14 @@ class BasicCommands:
                 target_path = arg
                 break
 
-        # Resolve path
+        
         current_dir = session['current_dir']
         if target_path:
             path = self.fs.resolve_path(current_dir, target_path)
         else:
             path = current_dir
 
-        # List directory
+        
         success, result = await self.fs.list_directory(discord_id, path, show_all)
 
         if not success:
@@ -42,7 +42,7 @@ class BasicCommands:
         if not result:
             return format_code_block("(empty directory)")
 
-        # Format output
+        
         if long_format:
             output = []
             for name, ftype, size, perms, modified, executable in result:
@@ -52,7 +52,7 @@ class BasicCommands:
                 output.append(f"{type_char}{perms}  {size_str}  {mod_time}  {name}")
             return format_code_block('\n'.join(output))
         else:
-            # Simple format
+            
             output = []
             for name, ftype, size, perms, modified, executable in result:
                 if ftype == 'directory':
@@ -70,24 +70,24 @@ class BasicCommands:
             return format_error("Not logged in")
 
         if not args:
-            # Go to home directory
+            
             username = session['username']
             target_path = f"/home/{username}"
         else:
             target_path = args[0]
 
-        # Resolve path
+        
         current_dir = session['current_dir']
         new_path = self.fs.resolve_path(current_dir, target_path)
 
-        # Check if directory exists
+        
         if not await self.fs.path_exists(discord_id, new_path):
             return format_error(f"No such directory: {new_path}")
 
         if not await self.fs.is_directory(discord_id, new_path):
             return format_error(f"Not a directory: {new_path}")
 
-        # Update session
+        
         self.um.update_current_directory(discord_id, new_path)
 
         return format_output(f"Changed directory to: {new_path}")
@@ -184,7 +184,7 @@ class BasicCommands:
         current_dir = session['current_dir']
         target_path = self.fs.resolve_path(current_dir, target)
 
-        # Prevent removing important directories
+        
         protected_dirs = ['/', '/home', '/var', '/apps']
         if target_path in protected_dirs:
             return format_error(f"Cannot remove protected directory: {target_path}")
@@ -205,7 +205,7 @@ class BasicCommands:
         if not args:
             return format_code_block("")
 
-        # Check for output redirection
+        
         if '>' in args:
             redirect_index = args.index('>')
             text = ' '.join(args[:redirect_index])
@@ -215,12 +215,12 @@ class BasicCommands:
                 current_dir = session['current_dir']
                 target_path = self.fs.resolve_path(current_dir, filename)
 
-                # Check if file exists
+                
                 if await self.fs.path_exists(discord_id, target_path):
-                    # Overwrite
+                    
                     success, message = await self.fs.write_file(discord_id, target_path, text)
                 else:
-                    # Create new
+                    
                     success, message = await self.fs.create_file(discord_id, target_path, text)
 
                 if success:
@@ -230,7 +230,7 @@ class BasicCommands:
             else:
                 return format_error("No filename specified after '>'")
         else:
-            # Just echo
+            
             text = ' '.join(args)
             return format_code_block(text)
 
@@ -239,34 +239,34 @@ class BasicCommands:
         if not channel:
             return format_error("Clear command requires channel context")
 
-        # Parse limit
-        limit = 100  # Default
+        
+        limit = 100  
         if args and args[0].isdigit():
             limit = int(args[0])
-            limit = min(limit, 1000)  # Max 1000 messages
+            limit = min(limit, 1000)  
 
-        # Check if user has permission
+        
         try:
-            # Check bot permissions
+            
             permissions = channel.permissions_for(channel.guild.me)
             if not permissions.manage_messages:
                 return format_error("Bot lacks 'Manage Messages' permission")
 
-            # Get user info for logging
+            
             session = self.um.get_session(discord_id)
             username = session['username'] if session else str(discord_id)
 
-            # Delete messages
-            deleted = await channel.purge(limit=limit + 1)  # +1 to include the command message
+            
+            deleted = await channel.purge(limit=limit + 1)  
 
-            # Log the purge
+            
             from .logger_manager import TerminalLogger
             TerminalLogger.log_system(
                 f"Channel purged by {username}: {len(deleted)} messages deleted in #{channel.name}",
                 level="WARNING"
             )
 
-            # Send confirmation (will auto-delete after 5 seconds)
+            
             import asyncio
             confirmation = await channel.send(
                 format_output(f"✅ Cleared {len(deleted)} message(s) from this channel")
@@ -275,9 +275,9 @@ class BasicCommands:
             try:
                 await confirmation.delete()
             except:
-                pass  # Ignore if already deleted
+                pass  
 
-            return None  # Don't send additional message
+            return None  
 
         except Exception as e:
             return format_error(f"Failed to clear channel: {str(e)}")
@@ -303,11 +303,11 @@ Discord ID: {discord_id}"""
 
     async def cmd_help(self, discord_id: int, args: list) -> str:
         """Display dynamic help menu"""
-        # Parse arguments
+        
         category = args[0] if len(args) > 0 else None
         command = args[1] if len(args) > 1 else None
 
-        # Get help from HelpManager
+        
         return self.help_manager.get_help(category, command)
 
     async def cmd_tree(self, discord_id: int, args: list) -> str:
@@ -419,7 +419,7 @@ Discord ID: {discord_id}"""
         current_dir = session['current_dir']
         search_path = current_dir
 
-        # Parse arguments
+        
         pattern = None
         file_type = None
 

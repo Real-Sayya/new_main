@@ -55,7 +55,7 @@ class RoleCreateModal(discord.ui.Modal):
         hoist_str = self.hoist.value.strip().lower()
         mention_str = self.mentionable.value.strip().lower()
 
-        # Parse color
+        
         color = None
         if color_str:
             color = self.role_manager.parse_color(color_str)
@@ -65,19 +65,19 @@ class RoleCreateModal(discord.ui.Modal):
                 )
                 return
 
-        # Parse hoist
+        
         hoist = hoist_str in ['yes', 'y', 'true', '1']
 
-        # Parse mentionable
+        
         mentionable = mention_str in ['yes', 'y', 'true', '1']
 
-        # Get context for logging
+        
         server, channel, user = TerminalLogger.get_interaction_context(interaction)
 
-        # Log modal interaction
+        
         TerminalLogger.log_modal(server, channel, user, "RoleCreateModal", "SUBMIT", f"Creating role: {name}")
 
-        # Create role
+        
         success, message, role = await self.role_manager.create_role(
             self.guild, name, color, hoist, mentionable
         )
@@ -86,7 +86,7 @@ class RoleCreateModal(discord.ui.Modal):
             await interaction.response.send_message(format_error(message))
             return
 
-        # Log role action
+        
         color_hex = f"#{role.color.value:06x}"
         details = f"Color: {color_hex}, Hoist: {hoist}, Mentionable: {mentionable}"
         TerminalLogger.log_role_action(
@@ -163,7 +163,7 @@ class RoleEditModal(discord.ui.Modal):
         hoist_str = self.hoist.value.strip().lower()
         mention_str = self.mentionable.value.strip().lower()
 
-        # Parse color
+        
         new_color = None
         if color_str:
             new_color = self.role_manager.parse_color(color_str)
@@ -173,29 +173,29 @@ class RoleEditModal(discord.ui.Modal):
                 )
                 return
 
-        # Parse hoist
+        
         new_hoist = None
         if hoist_str:
             new_hoist = hoist_str in ['yes', 'y', 'true', '1']
 
-        # Parse mentionable
+        
         new_mentionable = None
         if mention_str:
             new_mentionable = mention_str in ['yes', 'y', 'true', '1']
 
-        # Get context for logging
+        
         server, channel, user = TerminalLogger.get_interaction_context(interaction)
 
-        # Log modal interaction
+        
         TerminalLogger.log_modal(server, channel, user, "RoleEditModal", "SUBMIT", f"Editing role: {self.role.name}")
 
-        # Edit role
+        
         success, message = await self.role_manager.edit_role(
             self.guild, self.role, new_name, new_color, new_hoist, new_mentionable
         )
 
         if success:
-            # Build details for logging
+            
             changes = []
             if new_name:
                 changes.append(f"Name: {new_name}")
@@ -248,7 +248,7 @@ class RoleGiveModal(discord.ui.Modal):
         self.add_item(self.role_input)
 
     async def callback(self, interaction: discord.Interaction):
-        # Parse user
+        
         user_id = self.role_manager.parse_user_id(self.user_input.value)
         if not user_id:
             await interaction.response.send_message(
@@ -256,7 +256,7 @@ class RoleGiveModal(discord.ui.Modal):
             )
             return
 
-        # Parse role
+        
         role_id = self.role_manager.parse_role_id(self.role_input.value)
         if not role_id:
             await interaction.response.send_message(
@@ -264,7 +264,7 @@ class RoleGiveModal(discord.ui.Modal):
             )
             return
 
-        # Get member and role
+        
         try:
             member = await self.guild.fetch_member(user_id)
         except:
@@ -280,17 +280,17 @@ class RoleGiveModal(discord.ui.Modal):
             )
             return
 
-        # Get context for logging
+        
         server, channel, user = TerminalLogger.get_interaction_context(interaction)
 
-        # Log modal interaction
+        
         TerminalLogger.log_modal(server, channel, user, "RoleGiveModal", "SUBMIT", f"Giving {role.name} to {member.name}")
 
-        # Give role
+        
         success, message = await self.role_manager.give_role(self.guild, member, role)
 
         if success:
-            # Log role action
+            
             TerminalLogger.log_role_action(
                 server=server,
                 admin=user,
@@ -332,7 +332,7 @@ class RoleRemoveModal(discord.ui.Modal):
         self.add_item(self.role_input)
 
     async def callback(self, interaction: discord.Interaction):
-        # Parse user
+        
         user_id = self.role_manager.parse_user_id(self.user_input.value)
         if not user_id:
             await interaction.response.send_message(
@@ -340,7 +340,7 @@ class RoleRemoveModal(discord.ui.Modal):
             )
             return
 
-        # Parse role
+        
         role_id = self.role_manager.parse_role_id(self.role_input.value)
         if not role_id:
             await interaction.response.send_message(
@@ -348,7 +348,7 @@ class RoleRemoveModal(discord.ui.Modal):
             )
             return
 
-        # Get member and role
+        
         try:
             member = await self.guild.fetch_member(user_id)
         except:
@@ -364,17 +364,17 @@ class RoleRemoveModal(discord.ui.Modal):
             )
             return
 
-        # Get context for logging
+        
         server, channel, user = TerminalLogger.get_interaction_context(interaction)
 
-        # Log modal interaction
+        
         TerminalLogger.log_modal(server, channel, user, "RoleRemoveModal", "SUBMIT", f"Removing {role.name} from {member.name}")
 
-        # Remove role
+        
         success, message = await self.role_manager.remove_role(self.guild, member, role)
 
         if success:
-            # Log role action
+            
             TerminalLogger.log_role_action(
                 server=server,
                 admin=user,
