@@ -1,0 +1,192 @@
+{
+  "tempchannel": {
+    "title": "Temporary Voice Channel System",
+    "version": "1.0.0",
+    "description": "Ermöglicht Zugriff auf das temporäre Voice-Channel-System.",
+    "features": [
+      "Erstelle eigene temporäre Voice-Channels",
+      "Automatische Channel-Löschung wenn leer",
+      "Individuelle Channel-Einstellungen",
+      "User-Limit Kontrolle"
+    ],
+    "usage": [
+      "Betrete den Generator-Channel um einen Temp-Channel zu erstellen",
+      "Dein Channel wird automatisch erstellt",
+      "Nutze Rechtsklick > Channel bearbeiten für Einstellungen",
+      "Channel wird gelöscht wenn alle User ihn verlassen"
+    ],
+    "commands": [],
+    "permissions_granted": [
+      "Zugriff auf Voice-System-Channel"
+    ],
+    "notes": "Channels werden nach 24h Inaktivität automatisch gelöscht."
+  },
+  "modtools": {
+    "title": "Moderation Tools & Access",
+    "version": "1.2.0",
+    "description": "Zugriff auf Moderations-Tools und spezielle Moderations-Channels.",
+    "features": [
+      "Erweiterte Moderations-Commands",
+      "Zugriff auf Mod-Channels",
+      "Warn/Kick/Ban System",
+      "ModLog Einsicht",
+      "User-Report-System"
+    ],
+    "usage": [
+      "Nutze die Mod-Channels für Team-Kommunikation",
+      "Verwende Terminal-Commands für Moderation",
+      "Überprüfe ModLogs für Aktionen"
+    ],
+    "commands": [
+      "sudo warn <user> <reason> - User verwarnen",
+      "sudo kick <user> <reason> - User kicken",
+      "sudo ban <user> <reason> - User bannen",
+      "sudo modlog <user> - Moderations-Historie anzeigen",
+      "sudo delwarn <user> <warn_id> - Warnung entfernen"
+    ],
+    "permissions_granted": [
+      "Moderator-Rolle",
+      "Zugriff auf 2 Mod-Channels"
+    ],
+    "notes": "Verantwortungsvoller Umgang mit Mod-Tools ist verpflichtend!"
+  },
+  "devaccess": {
+    "title": "Developer Access Package",
+    "version": "2.0.0",
+    "description": "Entwickler-Zugang zu Code-Channels und Entwickler-Ressourcen.",
+    "features": [
+      "Zugriff auf Dev-Channels",
+      "Code-Sharing Channel",
+      "Projekt-Diskussionen",
+      "API-Dokumentations-Zugang",
+      "Beta-Testing Zugang"
+    ],
+    "usage": [
+      "Nutze #dev-chat für technische Diskussionen",
+      "Teile Code-Snippets in #code-sharing",
+      "Koordiniere Projekte in #dev-projects"
+    ],
+    "commands": [],
+    "permissions_granted": [
+      "Developer-Rolle",
+      "Zugriff auf 3 Dev-Channels"
+    ],
+    "notes": "Zugang wird nach Bewerbung oder Einladung gewährt."
+  },
+  "vip": {
+    "title": "VIP Member Access",
+    "version": "1.5.0",
+    "description": "VIP-Mitglieder-Zugang mit exklusiven Channels und Features.",
+    "features": [
+      "Exklusive VIP-Channels",
+      "VIP-Voice-Channels",
+      "Priorität im Support",
+      "Spezielle Berechtigungen",
+      "Early Access zu neuen Features"
+    ],
+    "usage": [
+      "Nutze die VIP-Lounge für exklusive Gespräche",
+      "Erhalte bevorzugten Support",
+      "Teste neue Features vor allen anderen"
+    ],
+    "commands": [],
+    "permissions_granted": [
+      "VIP-Rolle",
+      "Zugriff auf 2 exklusive Channels"
+    ],
+    "notes": "VIP-Status kann durch Boost, Donation oder Bewerbung erhalten werden."
+  },
+  "gaming": {
+    "title": "Gaming Package",
+    "version": "1.0.0",
+    "description": "Zugriff auf Gaming-Channels und Voice-Räume für Gamer.",
+    "features": [
+      "Zugriff auf Gaming-Text-Channels",
+      "Gaming-Voice-Channels",
+      "LFG (Looking for Group) System",
+      "Game-Night Ankündigungen",
+      "Turnier-Teilnahme"
+    ],
+    "usage": [
+      "Suche Mitspieler in #lfg",
+      "Organisiere Gaming-Sessions",
+      "Tritt Voice-Channels für dein Game bei"
+    ],
+    "commands": [],
+    "permissions_granted": [
+      "Zugriff auf 3 Gaming-Channels"
+    ],
+    "notes": "Perfekt für aktive Gamer und Community-Gaming!"
+  },
+  "music": {
+    "title": "Music Bot Access",
+    "version": "1.1.0",
+    "description": "Zugriff auf Music-Bot und gemeinsame Listening-Räume.",
+    "features": [
+      "Music-Bot Kontrolle",
+      "Musik-Voice-Channel",
+      "Playlist-Verwaltung",
+      "Queue-System",
+      "Musikvorschläge"
+    ],
+    "usage": [
+      "Nutze Music-Bot Commands in #music",
+      "Spiele Musik in Voice-Channels ab",
+      "Erstelle und teile Playlists"
+    ],
+    "commands": [
+      "!play <song> - Spiele einen Song",
+      "!skip - Überspringe aktuellen Song",
+      "!queue - Zeige Warteschlange",
+      "!playlist - Playlist-Verwaltung"
+    ],
+    "permissions_granted": [
+      "Zugriff auf Music-Channel"
+    ],
+    "notes": "Respektiere die Musikwünsche anderer User!"
+  },
+  "events": {
+    "title": "Events & Planning",
+    "version": "1.0.0",
+    "description": "Event-Benachrichtigungen und Zugang zu Planungs-Channels.",
+    "features": [
+      "Event-Ankündigungen",
+      "Event-Planung",
+      "Kalender-Integration",
+      "RSVP-System",
+      "Event-Erinnerungen"
+    ],
+    "usage": [
+      "Erhalte Benachrichtigungen über Events",
+      "Plane eigene Events",
+      "Melde dich für Events an"
+    ],
+    "commands": [],
+    "permissions_granted": [
+      "Event-Organisator-Rolle",
+      "Zugriff auf 2 Event-Channels"
+    ],
+    "notes": "Ideal für Community-Organisatoren und Event-Teilnehmer!"
+  },
+  "announcements": {
+    "title": "Server Announcements",
+    "version": "1.0.0",
+    "description": "Wichtige Server-Ankündigungen und Updates.",
+    "features": [
+      "Server-Ankündigungen",
+      "Update-Benachrichtigungen",
+      "Wichtige News",
+      "Changelog-Zugang"
+    ],
+    "usage": [
+      "Bleibe über Server-Updates informiert",
+      "Lies wichtige Ankündigungen",
+      "Verpasse keine wichtigen Änderungen"
+    ],
+    "commands": [],
+    "permissions_granted": [
+      "Zugriff auf Announcements-Channel"
+    ],
+    "notes": "Automatisch für alle User installiert."
+  }
+}

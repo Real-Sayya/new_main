@@ -1,0 +1,139 @@
+{
+  "packages": {
+    "tempchannel": {
+      "name": "tempchannel",
+      "version": "1.0.0",
+      "description": "Access to temporary voice channels system",
+      "channel_ids": [
+        1234567890123456789
+      ],
+      "role_ids": [],
+      "dependencies": [],
+      "size": 512,
+      "category": "voice",
+      "installed_by_default": false
+    },
+    "modtools": {
+      "name": "modtools",
+      "version": "1.2.0",
+      "description": "Access to moderation tools and channels",
+      "channel_ids": [
+        1234567890123456790,
+        1234567890123456791
+      ],
+      "role_ids": [
+        1234567890123456792
+      ],
+      "dependencies": [],
+      "size": 1024,
+      "category": "moderation",
+      "installed_by_default": false
+    },
+    "devaccess": {
+      "name": "devaccess",
+      "version": "2.0.0",
+      "description": "Developer access to code channels and resources",
+      "channel_ids": [
+        1234567890123456793,
+        1234567890123456794,
+        1234567890123456795
+      ],
+      "role_ids": [
+        1234567890123456796
+      ],
+      "dependencies": [],
+      "size": 2048,
+      "category": "development",
+      "installed_by_default": false
+    },
+    "vip": {
+      "name": "vip",
+      "version": "1.5.0",
+      "description": "VIP member access with exclusive channels",
+      "channel_ids": [
+        1234567890123456797,
+        1234567890123456798
+      ],
+      "role_ids": [
+        1234567890123456799
+      ],
+      "dependencies": [],
+      "size": 4096,
+      "category": "premium",
+      "installed_by_default": false
+    },
+    "gaming": {
+      "name": "gaming",
+      "version": "1.0.0",
+      "description": "Access to gaming channels and voice rooms",
+      "channel_ids": [
+        1234567890123456800,
+        1234567890123456801,
+        1234567890123456802
+      ],
+      "role_ids": [],
+      "dependencies": [],
+      "size": 1536,
+      "category": "entertainment",
+      "installed_by_default": false
+    },
+    "music": {
+      "name": "music",
+      "version": "1.1.0",
+      "description": "Access to music bot and listening rooms",
+      "channel_ids": [
+        1234567890123456803
+      ],
+      "role_ids": [],
+      "dependencies": [],
+      "size": 768,
+      "category": "entertainment",
+      "installed_by_default": false
+    },
+    "events": {
+      "name": "events",
+      "version": "1.0.0",
+      "description": "Event notifications and planning channels",
+      "channel_ids": [
+        1234567890123456804,
+        1234567890123456805
+      ],
+      "role_ids": [
+        1234567890123456806
+      ],
+      "dependencies": [],
+      "size": 512,
+      "category": "community",
+      "installed_by_default": false
+    },
+    "announcements": {
+      "name": "announcements",
+      "version": "1.0.0",
+      "description": "Important server announcements channel",
+      "channel_ids": [
+        1234567890123456807
+      ],
+      "role_ids": [],
+      "dependencies": [],
+      "size": 256,
+      "category": "info",
+      "installed_by_default": true
+    }
+  },
+  "settings": {
+    "max_packages_per_user": 20,
+    "require_admin_approval": false,
+    "allow_uninstall": true,
+    "disk_quota_enabled": true,
+    "max_disk_usage_bytes": 10485760
+  },
+  "categories": {
+    "voice": "Voice Channel Tools",
+    "moderation": "Moderation & Safety",
+    "development": "Development Resources",
+    "premium": "Premium Features",
+    "entertainment": "Entertainment & Fun",
+    "community": "Community Events",
+    "info": "Information & Updates"
+  }
+}

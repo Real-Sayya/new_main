@@ -1,0 +1,46 @@
+{
+  "discord_roles": {
+    "terminal_user": 1373601557039546400,
+    "terminal_admin": 1378122978008764606
+  },
+  "default_filesystem": {
+    "directories": [
+      "/home",
+      "/var",
+      "/var/log",
+      "/apps",
+      "/tmp"
+    ],
+    "files": {
+      "/apps/voice": {
+        "type": "app",
+        "description": "Voice Channel Manager",
+        "executable": true
+      },
+      "/apps/help": {
+        "type": "app",
+        "description": "Help Documentation",
+        "executable": true
+      },
+      "/home/.welcome": {
+        "type": "file",
+        "content": "Welcome to the Virtual Terminal System!\nType 'help' for available commands.\n\nYour home directory: /home/{username}/",
+        "executable": false
+      }
+    }
+  },
+  "settings": {
+    "require_login": true,
+    "session_timeout_minutes": 120,
+    "max_failed_login_attempts": 3,
+    "password_min_length": 6,
+    "command_prefix": "",
+    "admin_sudo_password_required": true
+  },
+  "command_aliases": {
+    "ll": "ls -l",
+    "la": "ls -a",
+    "..": "cd ..",
+    "clear": "cls"
+  }
+}

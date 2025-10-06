@@ -1,0 +1,15 @@
+{
+  "admins": [
+    {
+      "discord_id": 836835738800095242,
+      "username": "lena",
+      "note": "Inhaberin"
+    }
+  ],
+  "notes": [
+    "Diese Datei enthält die Admin-User für das Terminal-System",
+    "discord_id: Die Discord-ID des Admins",
+    "username: Der Username im Terminal (muss trotzdem registriert werden)",
+    "Admins können: sudo nutzen, channel trust/untrust, useradd/userdel"
+  ]
+}

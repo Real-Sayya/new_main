@@ -1,0 +1,517 @@
+{
+  "categories": {
+    "filesystem": {
+      "name": "File System",
+      "icon": "📁",
+      "description": "File and directory management commands",
+      "commands": {
+        "ls": {
+          "usage": "ls [-l] [-a] [path]",
+          "description": "List directory contents",
+          "examples": [
+            "ls",
+            "ls -l",
+            "ls -a /home",
+            "ls -l documents"
+          ],
+          "options": [
+            "-l  Long format with details",
+            "-a  Show hidden files"
+          ]
+        },
+        "cd": {
+          "usage": "cd <directory>",
+          "description": "Change current directory",
+          "examples": [
+            "cd /home",
+            "cd documents",
+            "cd ..",
+            "cd"
+          ]
+        },
+        "pwd": {
+          "usage": "pwd",
+          "description": "Print working directory (show current location)",
+          "examples": ["pwd"]
+        },
+        "mkdir": {
+          "usage": "mkdir <directory>",
+          "description": "Create a new directory",
+          "examples": [
+            "mkdir projects",
+            "mkdir /home/user/newdir"
+          ]
+        },
+        "touch": {
+          "usage": "touch <filename>",
+          "description": "Create an empty file",
+          "examples": [
+            "touch readme.txt",
+            "touch /home/user/notes.md"
+          ]
+        },
+        "cat": {
+          "usage": "cat <filename>",
+          "description": "Display file contents",
+          "examples": [
+            "cat readme.txt",
+            "cat /home/user/config.json"
+          ]
+        },
+        "rm": {
+          "usage": "rm [-r] <file|directory>",
+          "description": "Remove file or directory",
+          "examples": [
+            "rm file.txt",
+            "rm -r folder"
+          ],
+          "options": [
+            "-r  Remove directory and contents recursively"
+          ]
+        },
+        "echo": {
+          "usage": "echo <text> [> filename]",
+          "description": "Print text or write to file",
+          "examples": [
+            "echo Hello World",
+            "echo Hello > greeting.txt"
+          ]
+        },
+        "mv": {
+          "usage": "mv <source> <destination>",
+          "description": "Move or rename file/directory",
+          "examples": [
+            "mv oldname.txt newname.txt",
+            "mv file.txt /home/user/documents/"
+          ]
+        },
+        "cp": {
+          "usage": "cp [-r] <source> <destination>",
+          "description": "Copy file or directory",
+          "examples": [
+            "cp file.txt backup.txt",
+            "cp -r folder newfolder"
+          ],
+          "options": [
+            "-r  Copy directory recursively"
+          ]
+        },
+        "chmod": {
+          "usage": "chmod <mode> <file>",
+          "description": "Change file permissions",
+          "examples": [
+            "chmod 755 script.sh",
+            "chmod rwxr-xr-x script.sh"
+          ]
+        },
+        "find": {
+          "usage": "find [-name pattern] [-type f|d]",
+          "description": "Find files by name or type",
+          "examples": [
+            "find -name test",
+            "find -name *.txt",
+            "find -type f",
+            "find /home -name readme"
+          ],
+          "options": [
+            "-name  Search by filename pattern",
+            "-type  Filter by type (f=file, d=directory)"
+          ]
+        },
+        "grep": {
+          "usage": "grep <pattern> [path]",
+          "description": "Search for pattern in file contents",
+          "examples": [
+            "grep hello",
+            "grep error /var/log"
+          ]
+        },
+        "du": {
+          "usage": "du",
+          "description": "Display disk usage statistics",
+          "examples": ["du"]
+        },
+        "tree": {
+          "usage": "tree [path]",
+          "description": "Display directory tree structure",
+          "examples": [
+            "tree",
+            "tree /home"
+          ]
+        }
+      }
+    },
+    "user": {
+      "name": "User Management",
+      "icon": "👤",
+      "description": "User authentication and account management",
+      "commands": {
+        "register": {
+          "usage": "register",
+          "description": "Register a new account (opens modal)",
+          "examples": ["register"]
+        },
+        "login": {
+          "usage": "login",
+          "description": "Login to terminal (opens modal)",
+          "examples": ["login"]
+        },
+        "logout": {
+          "usage": "logout",
+          "description": "Logout from terminal",
+          "examples": ["logout"]
+        },
+        "passwd": {
+          "usage": "passwd <new_password>",
+          "description": "Change your password",
+          "examples": ["passwd MyNewPassword123"]
+        },
+        "resetpw": {
+          "usage": "resetpw",
+          "description": "Reset forgotten password (sends code to DM)",
+          "examples": ["resetpw"]
+        },
+        "whoami": {
+          "usage": "whoami",
+          "description": "Display current user information",
+          "examples": ["whoami"]
+        }
+      }
+    },
+    "sudo": {
+      "name": "Sudo Commands",
+      "icon": "🔐",
+      "description": "Commands requiring password authentication (available to all users)",
+      "commands": {
+        "sudo": {
+          "usage": "sudo <command> [args]",
+          "description": "Execute privileged commands (clear, apt)",
+          "examples": [
+            "sudo clear",
+            "sudo apt install tempchannel"
+          ],
+          "notes": [
+            "Available to ALL logged-in users",
+            "Requires password confirmation",
+            "For admin commands, use 'root' instead"
+          ]
+        },
+        "clear": {
+          "usage": "sudo clear [limit]",
+          "description": "Purge channel messages (requires sudo)",
+          "examples": [
+            "sudo clear",
+            "sudo clear 50"
+          ],
+          "options": [
+            "limit  Number of messages to delete (default: 100, max: 1000)"
+          ],
+          "notes": [
+            "Deletes messages from current channel",
+            "Requires 'Manage Messages' bot permission"
+          ]
+        }
+      }
+    },
+    "admin": {
+      "name": "Root Administration",
+      "icon": "⚠️",
+      "description": "System administration commands (requires terminal admin)",
+      "commands": {
+        "root": {
+          "usage": "root <command>",
+          "description": "Execute admin-only commands with root privileges",
+          "examples": [
+            "root useradd testuser password123",
+            "root warn @user Spam"
+          ],
+          "notes": [
+            "Only for terminal admins",
+            "Requires admin password confirmation"
+          ]
+        },
+        "useradd": {
+          "usage": "root useradd <discord_id> [role]",
+          "description": "Promote existing terminal user to admin or change role",
+          "examples": [
+            "root useradd 123456789",
+            "root useradd 987654321 admin"
+          ],
+          "notes": [
+            "User must be registered in terminal first (via 'register' command)",
+            "Does NOT create new users, only changes role of existing users",
+            "Default role is 'admin' if not specified",
+            "User keeps their existing password and username"
+          ]
+        },
+        "userdel": {
+          "usage": "root userdel <discord_id>",
+          "description": "Remove root/admin rights from a user (demote to regular user)",
+          "examples": ["root userdel 123456789"],
+          "notes": [
+            "Does NOT delete the user account",
+            "Only removes admin rights (sets role to 'user')",
+            "User keeps their account, password, and filesystem",
+            "Cannot remove your own admin rights"
+          ]
+        },
+        "usermod": {
+          "usage": "root usermod <username> <role>",
+          "description": "Modify user role (user/admin)",
+          "examples": ["root usermod john admin"]
+        },
+        "users": {
+          "usage": "root users",
+          "description": "List all registered users",
+          "examples": ["root users"]
+        },
+        "logs": {
+          "usage": "root logs [limit]",
+          "description": "View system logs",
+          "examples": [
+            "root logs",
+            "root logs 50"
+          ]
+        },
+        "channel": {
+          "usage": "root channel <trust|untrust|list>",
+          "description": "Manage trusted channels",
+          "examples": [
+            "root channel trust",
+            "root channel untrust",
+            "root channel list"
+          ]
+        }
+      }
+    },
+    "moderation": {
+      "name": "Moderation",
+      "icon": "🛡️",
+      "description": "Moderation and user management (requires root/terminal admin)",
+      "commands": {
+        "warn": {
+          "usage": "root warn <@user|user_id> <reason>",
+          "description": "Issue a warning to a user",
+          "examples": [
+            "root warn @john Spamming in chat",
+            "root warn 123456789 Breaking rules"
+          ],
+          "notes": [
+            "Auto-kick at 3 warnings",
+            "Auto-tempban (1 day) at 5 warnings",
+            "Auto-permaban at 10 warnings"
+          ]
+        },
+        "kick": {
+          "usage": "root kick <@user|user_id> [reason]",
+          "description": "Kick a user from the server",
+          "examples": [
+            "root kick @john",
+            "root kick @john Spamming"
+          ]
+        },
+        "ban": {
+          "usage": "root ban <@user|user_id> [duration] [reason]",
+          "description": "Ban a user (permanent or temporary)",
+          "examples": [
+            "root ban @john",
+            "root ban @john Hacking",
+            "root ban @john 7d Spam"
+          ],
+          "notes": [
+            "Duration: 1m, 1h, 1d, 1w (minutes, hours, days, weeks)",
+            "No duration = permanent ban"
+          ]
+        },
+        "unban": {
+          "usage": "root unban <user_id> [reason]",
+          "description": "Unban a user",
+          "examples": [
+            "root unban 123456789",
+            "root unban 123456789 Appeal accepted"
+          ]
+        },
+        "timeout": {
+          "usage": "root timeout <@user|user_id> <duration> [reason]",
+          "description": "Timeout a user (Discord native)",
+          "examples": [
+            "root timeout @john 1h",
+            "root timeout @john 30m Spam"
+          ],
+          "notes": [
+            "Max duration: 28 days",
+            "Min duration: 1 minute"
+          ]
+        },
+        "untimeout": {
+          "usage": "root untimeout <@user|user_id> [reason]",
+          "description": "Remove timeout from a user",
+          "examples": ["root untimeout @john"]
+        },
+        "delwarn": {
+          "usage": "root delwarn <@user|user_id>",
+          "description": "Remove one warning from a user",
+          "examples": ["root delwarn @john"]
+        },
+        "modlog": {
+          "usage": "root modlog <@user|user_id>",
+          "description": "View moderation history for a user",
+          "examples": [
+            "root modlog @john",
+            "root modlog 123456789"
+          ]
+        }
+      }
+    },
+    "roles": {
+      "name": "Role Management",
+      "icon": "👑",
+      "description": "Discord role management (requires root/terminal admin)",
+      "commands": {
+        "role create": {
+          "usage": "root role create",
+          "description": "Create a new role (opens modal)",
+          "examples": ["root role create"]
+        },
+        "role delete": {
+          "usage": "root role delete <@role|role_id>",
+          "description": "Delete a role",
+          "examples": [
+            "root role delete @Moderator",
+            "root role delete 123456789"
+          ]
+        },
+        "role give": {
+          "usage": "root role give",
+          "description": "Give a role to a user (opens modal)",
+          "examples": ["root role give"]
+        },
+        "role remove": {
+          "usage": "root role remove",
+          "description": "Remove a role from a user (opens modal)",
+          "examples": ["root role remove"]
+        },
+        "role edit": {
+          "usage": "root role edit <@role|role_id>",
+          "description": "Edit role properties (opens modal)",
+          "examples": ["root role edit @Moderator"]
+        },
+        "role list": {
+          "usage": "root role list [-a]",
+          "description": "List all roles in the server",
+          "examples": [
+            "root role list",
+            "root role list -a"
+          ],
+          "options": [
+            "-a  Show managed roles (bot roles)"
+          ]
+        },
+        "role info": {
+          "usage": "root role info <@role|role_id>",
+          "description": "Show detailed role information",
+          "examples": ["root role info @Moderator"]
+        }
+      }
+    },
+    "apt": {
+      "name": "Package Manager",
+      "icon": "📦",
+      "description": "APT package management system (requires sudo)",
+      "commands": {
+        "apt install": {
+          "usage": "sudo apt install <package_name>",
+          "description": "Install a package (grants channel/role access)",
+          "examples": [
+            "sudo apt install tempchannel",
+            "sudo apt install vip",
+            "sudo apt install gaming"
+          ],
+          "notes": [
+            "Requires sudo authentication",
+            "Packages grant access to channels and roles",
+            "Packages consume disk quota"
+          ]
+        },
+        "apt remove": {
+          "usage": "sudo apt remove <package_name>",
+          "description": "Uninstall a package",
+          "examples": [
+            "sudo apt remove tempchannel",
+            "sudo apt remove gaming"
+          ]
+        },
+        "apt list": {
+          "usage": "sudo apt list [--installed]",
+          "description": "List installed or all packages",
+          "examples": [
+            "sudo apt list",
+            "sudo apt list --installed"
+          ]
+        },
+        "apt search": {
+          "usage": "sudo apt search [term]",
+          "description": "Search for available packages",
+          "examples": [
+            "sudo apt search",
+            "sudo apt search vip",
+            "sudo apt search channel"
+          ]
+        },
+        "apt show": {
+          "usage": "sudo apt show <package_name>",
+          "description": "Show detailed package information",
+          "examples": [
+            "sudo apt show tempchannel",
+            "sudo apt show vip"
+          ]
+        },
+        "apt update": {
+          "usage": "sudo apt update",
+          "description": "Update package list from repository",
+          "examples": ["sudo apt update"]
+        },
+        "apt help": {
+          "usage": "sudo apt help",
+          "description": "Show detailed APT help",
+          "examples": ["sudo apt help"]
+        }
+      }
+    },
+    "system": {
+      "name": "System",
+      "icon": "🔧",
+      "description": "System information and utilities",
+      "commands": {
+        "help": {
+          "usage": "help [category]",
+          "description": "Show help for commands",
+          "examples": [
+            "help",
+            "help filesystem",
+            "help apt",
+            "help moderation"
+          ]
+        },
+        "clear": {
+          "usage": "clear",
+          "description": "Clear the screen",
+          "examples": ["clear", "cls"]
+        }
+      }
+    }
+  },
+  "aliases": {
+    "ll": "ls -l",
+    "la": "ls -a",
+    "..": "cd ..",
+    "cls": "clear"
+  },
+  "notes": [
+    "Terminal commands only work in trusted channels",
+    "Admins use 'root channel trust' to enable a channel",
+    "'sudo' commands (clear, apt) are available to ALL users with password",
+    "'root' commands (moderation, roles, admin) require terminal admin privileges",
+    "Type 'help <category>' to see commands for that category"
+  ]
+}
